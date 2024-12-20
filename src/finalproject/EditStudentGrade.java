@@ -18,13 +18,30 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class AddStudentGrade extends javax.swing.JFrame {
+public class EditStudentGrade extends javax.swing.JFrame {
     Connection conn = null; 
     PreparedStatement ps = null;
     ResultSet rs = null;
     boolean isConnectionOpen = false; 
 
-    public AddStudentGrade() {
+    public EditStudentGrade(Object[] rowData) {
+        initComponents();
+        refresh();
+        addGradeChangeListener();
+        toggleFilter(true);
+
+        // Initialize fields with the passed data
+        txtSchoolYear.setText(rowData[0].toString());
+        txtSemester.setText(rowData[1].toString());
+        txtStudentNo.setText(rowData[2].toString());
+        txtSubject.setText(rowData[3].toString());
+        txtDescription.setText(rowData[4].toString());
+        txtBlock.setText(rowData[5].toString());
+        txtGrade.setText(rowData[6].toString());
+        txtRemarks.setText(rowData[7].toString());
+    }
+    
+    public EditStudentGrade() {
         initComponents();
         refresh();
         addGradeChangeListener();
@@ -32,55 +49,9 @@ public class AddStudentGrade extends javax.swing.JFrame {
     }
     public void refresh() {
         try {
-            conn = ConnectPLMDB.Connect();
-            isConnectionOpen = true;
-            // Populate cmbBlock with block numbers
-            ps = conn.prepareStatement("SELECT DISTINCT block_no FROM subject_schedule ORDER BY block_no ASC");
-            rs = ps.executeQuery();
-            cmbBlock.removeAllItems();
-            while (rs.next()) {
-                cmbBlock.addItem(rs.getString("block_no"));
-            }
-            rs.close();
-            ps.close();
-
-            // Populate jComboBox1 with subject codes and descriptions
-            ps = conn.prepareStatement("SELECT subject_code, description FROM subject ORDER BY subject_code ASC");
-            rs = ps.executeQuery();
-            cmbSubject.removeAllItems();
-            while (rs.next()) {
-                String subjectCode = rs.getString("subject_code");
-                String description = rs.getString("description");
-                cmbSubject.addItem(subjectCode + " - " + description);
-            }
-            rs.close();
-            ps.close();
-
-            // Populate cmbSchoolYear with school years
-            ps = conn.prepareStatement("SELECT syear FROM schoolyear ORDER BY syear DESC");
-            rs = ps.executeQuery();
-            cmbSchoolYear.removeAllItems();
-            while (rs.next()) {
-                cmbSchoolYear.addItem(rs.getString("syear"));
-            }
-            rs.close();
-            ps.close();
-
-            // Populate cmbSemester with semesters
-            ps = conn.prepareStatement("SELECT semester FROM semester ORDER BY semester ASC");
-            rs = ps.executeQuery();
-            cmbSemester.removeAllItems();
-            while (rs.next()) {
-                cmbSemester.addItem(rs.getString("semester"));
-            }
-            rs.close();
-            ps.close();
-
-            conn.close();
-            isConnectionOpen = false;
+            // Your refresh logic here
         } catch (Exception e) {
             e.printStackTrace();
-            isConnectionOpen = false;
         }
     }
     private void toggleFilter(boolean status){
@@ -204,10 +175,6 @@ public class AddStudentGrade extends javax.swing.JFrame {
         txtRemarks = new javax.swing.JTextField();
         btnCancel = new finalproject.Components.Button();
         btnSave = new finalproject.Components.Button();
-        cmbSubject = new javax.swing.JComboBox<>();
-        cmbSchoolYear = new javax.swing.JComboBox<>();
-        cmbSemester = new javax.swing.JComboBox<>();
-        cmbBlock = new javax.swing.JComboBox<>();
         btnCancel1 = new finalproject.Components.Button();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
@@ -226,17 +193,21 @@ public class AddStudentGrade extends javax.swing.JFrame {
         txtRemark = new javax.swing.JTextField();
         txtDescription = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
+        txtBlock = new javax.swing.JTextField();
+        txtSemester = new javax.swing.JTextField();
+        txtSchoolYear = new javax.swing.JTextField();
+        btnDelete = new finalproject.Components.Button();
+        txtSubject = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1600, 675));
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
         roundPanel1.setPreferredSize(new java.awt.Dimension(1220, 612));
 
         jLabel1.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(43, 58, 103));
-        jLabel1.setText("Add Student Grade");
+        jLabel1.setText("Update Student Grade");
 
         jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel5.setText("Subject Code");
@@ -353,7 +324,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
         btnSave.setBackground(new java.awt.Color(91, 142, 225));
         btnSave.setBorder(null);
         btnSave.setForeground(new java.awt.Color(255, 255, 255));
-        btnSave.setText("Create Grades");
+        btnSave.setText("Update Grades");
         btnSave.setBorderColor(new java.awt.Color(91, 142, 225));
         btnSave.setBorderPainted(false);
         btnSave.setColor(new java.awt.Color(91, 142, 225));
@@ -367,24 +338,11 @@ public class AddStudentGrade extends javax.swing.JFrame {
                 btnSaveMouseClicked(evt);
             }
         });
-
-        cmbSubject.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbSubject.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbSubjectItemStateChanged(evt);
-            }
-        });
-        cmbSubject.addActionListener(new java.awt.event.ActionListener() {
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbSubjectActionPerformed(evt);
+                btnSaveActionPerformed(evt);
             }
         });
-
-        cmbSchoolYear.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        cmbSemester.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        cmbBlock.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnCancel1.setBackground(new java.awt.Color(91, 142, 225));
         btnCancel1.setBorder(null);
@@ -492,6 +450,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
             .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
         );
 
+        txtStudentNo.setEditable(false);
         txtStudentNo.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
 
         jLabel17.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
@@ -520,6 +479,39 @@ public class AddStudentGrade extends javax.swing.JFrame {
         jLabel21.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel21.setText("%");
 
+        txtBlock.setEditable(false);
+        txtBlock.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+
+        txtSemester.setEditable(false);
+
+        txtSchoolYear.setEditable(false);
+
+        btnDelete.setBackground(new java.awt.Color(91, 142, 225));
+        btnDelete.setBorder(null);
+        btnDelete.setForeground(new java.awt.Color(255, 255, 255));
+        btnDelete.setText("Delete Grades");
+        btnDelete.setBorderColor(new java.awt.Color(91, 142, 225));
+        btnDelete.setBorderPainted(false);
+        btnDelete.setColor(new java.awt.Color(91, 142, 225));
+        btnDelete.setColorClick(new java.awt.Color(73, 114, 180));
+        btnDelete.setColorOver(new java.awt.Color(82, 128, 203));
+        btnDelete.setFocusPainted(false);
+        btnDelete.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
+        btnDelete.setRadius(20);
+        btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnDeleteMouseClicked(evt);
+            }
+        });
+
+        txtSubject.setEditable(false);
+        txtSubject.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        txtSubject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSubjectActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
@@ -531,25 +523,25 @@ public class AddStudentGrade extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(txtStudentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addGap(32, 32, 32)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(cmbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addGap(28, 28, 28)
-                                .addComponent(txtStudentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5))))
                         .addGap(36, 36, 36)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(cmbBlock, javax.swing.GroupLayout.Alignment.LEADING, 0, 161, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                            .addComponent(txtBlock))
                         .addGap(48, 48, 48)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(34, 34, 34)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(txtSemester))
+                        .addGap(89, 89, 89)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -604,7 +596,9 @@ public class AddStudentGrade extends javax.swing.JFrame {
                                         .addComponent(txtRemark, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(97, 97, 97)
                                         .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(30, 30, 30)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(10, 10, 10)
                                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(header2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -631,25 +625,31 @@ public class AddStudentGrade extends javax.swing.JFrame {
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(72, 72, 72))
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel1)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(36, 36, 36))
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                                        .addGap(43, 43, 43)))
+                                .addGap(18, 18, 18))
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cmbBlock, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtStudentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(19, 19, 19)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(txtStudentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtBlock, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(19, 19, 19)))
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -668,11 +668,11 @@ public class AddStudentGrade extends javax.swing.JFrame {
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(cmbGrades, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
                                     .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(cmbGrades, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(cmbSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtSubject, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(18, 18, 18)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
@@ -685,7 +685,8 @@ public class AddStudentGrade extends javax.swing.JFrame {
                                 .addGap(54, 54, 54)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -754,63 +755,96 @@ public class AddStudentGrade extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtDescriptionActionPerformed
 
-    private void cmbSubjectItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbSubjectItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
-                    String selectedItem = (String) cmbSubject.getSelectedItem();
-                    if (selectedItem != null) {
-                        String subjectCode = selectedItem.split(" - ")[0];
-                        updateSubjectDescription(subjectCode);
-                    }
-                }
-    }//GEN-LAST:event_cmbSubjectItemStateChanged
-
-    private void cmbSubjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSubjectActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_cmbSubjectActionPerformed
-
     private void txtGradeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGradeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtGradeActionPerformed
 
     private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
         // TODO add your handling code here:
-        String syear = cmbSchoolYear.getSelectedItem().toString();
-        String semester = cmbSemester.getSelectedItem().toString();
+        String syear = txtSchoolYear.getText();
+        String semester = txtSemester.getText();
         String studentNo = txtStudentNo.getText();
-        String subjectCode = cmbSubject.getSelectedItem().toString().split(" - ")[0];
-        String blockNo = cmbBlock.getSelectedItem().toString();
-        String grade = txtEquivalent.getText();
+        String subjectCode = txtSubject.getText();
+        String blockNo = txtBlock.getText();
+        String grade = txtGrade.getText();
+        String remark = txtRemark.getText();
 
-        if (syear.isEmpty() || semester.isEmpty() || studentNo.isEmpty() || subjectCode.isEmpty() || blockNo.isEmpty() || grade.isEmpty()) {
+        if (syear.isEmpty() || semester.isEmpty() || studentNo.isEmpty() || subjectCode.isEmpty() || blockNo.isEmpty() || grade.isEmpty() || remark.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill in all fields.");
             return;
         }
 
         try {
             conn = ConnectPLMDB.Connect();
-            ps = conn.prepareStatement("INSERT INTO plm.grades (syear, semester, student_no, subject_code, block_no, grade) VALUES (?, ?, ?, ?, ?, ?)");
-            ps.setString(1, syear);
-            ps.setString(2, semester);
-            ps.setString(3, studentNo);
-            ps.setString(4, subjectCode);
-            ps.setString(5, blockNo);
-            ps.setDouble(6, Double.parseDouble(grade));
+            ps = conn.prepareStatement("UPDATE plm.grades SET grade = ?, remark = ? WHERE syear = ? AND semester = ? AND student_no = ? AND subject_code = ? AND block_no = ?");
+            ps.setDouble(1, Double.parseDouble(grade));
+            ps.setString(2, remark);
+            ps.setString(3, syear);
+            ps.setString(4, semester);
+            ps.setString(5, studentNo);
+            ps.setString(6, subjectCode);
+            ps.setString(7, blockNo);
             ps.executeUpdate();
             conn.close();
-            JOptionPane.showMessageDialog(null, "Grade submitted successfully!");
+            JOptionPane.showMessageDialog(null, "Grade updated successfully!");
+            this.dispose(); // Close the edit window
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error submitting grade: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error updating grade: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnSaveMouseClicked
+
+    private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
+        // TODO add your handling code here:
+        String syear = txtSchoolYear.getText();
+        String semester = txtSemester.getText();
+        String studentNo = txtStudentNo.getText();
+        String subjectCode = txtSubject.getText();
+        String blockNo = txtBlock.getText();
+
+        if (syear.isEmpty() || semester.isEmpty() || studentNo.isEmpty() || subjectCode.isEmpty() || blockNo.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                conn = ConnectPLMDB.Connect();
+                ps = conn.prepareStatement("DELETE FROM plm.grades WHERE syear = ? AND semester = ? AND student_no = ? AND subject_code = ? AND block_no = ?");
+                ps.setString(1, syear);
+                ps.setString(2, semester);
+                ps.setString(3, studentNo);
+                ps.setString(4, subjectCode);
+                ps.setString(5, blockNo);
+                int rowsAffected = ps.executeUpdate();
+                conn.close();
+                if (rowsAffected > 0) {
+                    JOptionPane.showMessageDialog(null, "Grade deleted successfully!");
+                    this.dispose(); // Close the edit window
+                } else {
+                    JOptionPane.showMessageDialog(null, "No matching record found to delete.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error deleting grade: " + ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnDeleteMouseClicked
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void txtSubjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSubjectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSubjectActionPerformed
 
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddStudentGrade().setVisible(true);
+                new EditStudentGrade().setVisible(true);
             }
         });
     }
@@ -818,12 +852,9 @@ public class AddStudentGrade extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private finalproject.Components.Button btnCancel;
     private finalproject.Components.Button btnCancel1;
+    private finalproject.Components.Button btnDelete;
     private finalproject.Components.Button btnSave;
-    private javax.swing.JComboBox<String> cmbBlock;
     private javax.swing.JComboBox<String> cmbGrades;
-    private javax.swing.JComboBox<String> cmbSchoolYear;
-    private javax.swing.JComboBox<String> cmbSemester;
-    private javax.swing.JComboBox<String> cmbSubject;
     private finalproject.Menu.Dashboard dashboard1;
     private finalproject.Menu.Header header2;
     private javax.swing.JLabel jLabel1;
@@ -852,12 +883,16 @@ public class AddStudentGrade extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JTextField txtBlock;
     private javax.swing.JTextField txtDescription;
     private javax.swing.JTextField txtEquivalent;
     private javax.swing.JTextField txtGrade;
     private javax.swing.JTextField txtRemark;
     private javax.swing.JTextField txtRemarks;
+    private javax.swing.JTextField txtSchoolYear;
+    private javax.swing.JTextField txtSemester;
     private javax.swing.JTextField txtStudentName;
     private javax.swing.JTextField txtStudentNo;
+    private javax.swing.JTextField txtSubject;
     // End of variables declaration//GEN-END:variables
 }

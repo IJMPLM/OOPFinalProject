@@ -11,6 +11,7 @@ import finalproject.Table.TableActionCellRender;
 import java.text.*;
 import java.awt.print.*;
 import javax.swing.JTable;
+import javax.swing.table.TableColumnModel;
 
 public class StudentGrades extends javax.swing.JFrame {
     Connection conn = null; 
@@ -21,8 +22,8 @@ public class StudentGrades extends javax.swing.JFrame {
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
 
-        tblStudentGrades.getColumnModel().getColumn(8).setCellRenderer(new TableActionCellRender());
-        tblStudentGrades.getColumnModel().getColumn(8).setPreferredWidth(90);
+        tblStudentGrades.getColumnModel().getColumn(7).setCellRenderer(new TableActionCellRender());
+        tblStudentGrades.getColumnModel().getColumn(7).setPreferredWidth(90);
         tblStudentGrades.getTableHeader().setFont (new Font("Microsoft Jheng Hei UI", Font.PLAIN, 14)); 
         tblStudentGrades.getTableHeader().setOpaque (false);
         tblStudentGrades.getTableHeader().setBackground (new Color (212,228,255));
@@ -33,13 +34,46 @@ public class StudentGrades extends javax.swing.JFrame {
     public void refresh() {
         try {
             conn = ConnectPLMDB.Connect();
-            ps = conn.prepareStatement("SELECT * FROM plm.vwgrades ORDER BY DESCRIPTION");
+            ps = conn.prepareStatement("SELECT * FROM plm.vwgrades ORDER BY syear DESC");
             rs = ps.executeQuery();
-            tblStudentGrades.setModel(DbUtils.resultSetToTableModel(rs));
+
+            // Create a custom table model
+            DefaultTableModel model = new DefaultTableModel(new Object[]{
+                "School Year", "Semester", "Student Number", "Subject Code", "Description", "Block No", "Grade", "Remark"
+            }, 0);
+
+            // Populate the table model with data from the result set
+            while (rs.next()) {
+                String syear = rs.getString("syear");
+                String semester = rs.getString("semester");
+                String studentNo = rs.getString("student_no");
+                String subjectCode = rs.getString("subject_code");
+                String subjectTitle = rs.getString("description");
+                String blockNo = rs.getString("block_no"); 
+                String grade = rs.getString("grade");
+                String remark = rs.getString("remark");
+
+                model.addRow(new Object[]{syear, semester, studentNo, subjectCode, subjectTitle, blockNo, grade, remark});
+            }
+
+            tblStudentGrades.setModel(model);
+            TableColumnModel columnModel = tblStudentGrades.getColumnModel();
+            columnModel.getColumn(0).setPreferredWidth(30); 
+            columnModel.getColumn(1).setPreferredWidth(20); 
+            columnModel.getColumn(2).setPreferredWidth(60); 
+            columnModel.getColumn(3).setPreferredWidth(50); 
+            columnModel.getColumn(4).setPreferredWidth(170); 
+            columnModel.getColumn(5).setPreferredWidth(10);
+            columnModel.getColumn(6).setPreferredWidth(10);
+            columnModel.getColumn(7).setPreferredWidth(60);  
+            rs.close();
+            ps.close();
+            conn.close();
         } catch (Exception e) {
-            System.out.print(e);
-        } 
+            e.printStackTrace();
+        }
     }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -107,40 +141,9 @@ public class StudentGrades extends javax.swing.JFrame {
 
         tblStudentGrades.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
         tblStudentGrades.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "School Year", "Sem", "Student Number", "Sub Code", "Description", "Block No", "Grade", "Remark", "Action"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+            new Object [][] {},
+            new String [] {"School Year", "Semester", "Student Number", "Subject Code", "Description", "Block No", "Grade", "Remark"}
+        ));
         tblStudentGrades.setFocusable(false);
         tblStudentGrades.setGridColor(new java.awt.Color(204, 204, 204));
         tblStudentGrades.setRowHeight(40);
@@ -154,13 +157,6 @@ public class StudentGrades extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tblStudentGrades);
-        if (tblStudentGrades.getColumnModel().getColumnCount() > 0) {
-            tblStudentGrades.getColumnModel().getColumn(0).setPreferredWidth(80);
-            tblStudentGrades.getColumnModel().getColumn(1).setPreferredWidth(50);
-            tblStudentGrades.getColumnModel().getColumn(2).setPreferredWidth(100);
-            tblStudentGrades.getColumnModel().getColumn(4).setPreferredWidth(150);
-            tblStudentGrades.getColumnModel().getColumn(8).setPreferredWidth(50);
-        }
 
         cmdPrint.setBackground(new java.awt.Color(255, 255, 255));
         cmdPrint.setText("Print");
@@ -185,18 +181,20 @@ public class StudentGrades extends javax.swing.JFrame {
             .addGroup(roundPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(dashboard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35)
-                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45)
                         .addComponent(btnAddRec, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(cmdPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(214, 214, 214)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 940, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
+                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(26, Short.MAX_VALUE))
             .addComponent(header3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         roundPanel1Layout.setVerticalGroup(
@@ -207,25 +205,25 @@ public class StudentGrades extends javax.swing.JFrame {
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cmdPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnAddRec, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmdPrint, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnAddRec, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1))
                         .addGap(15, 15, 15)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 17, Short.MAX_VALUE))
+                        .addGap(0, 7, Short.MAX_VALUE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(dashboard1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(10, 10, 10))))
+                        .addComponent(dashboard1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(10, 10, 10))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(roundPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(roundPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,7 +257,27 @@ public class StudentGrades extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdPrintActionPerformed
 
     private void tblStudentGradesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblStudentGradesMouseClicked
-        
+        int row = tblStudentGrades.getSelectedRow();
+        if (row >= 0) {
+            // Retrieve values from the selected row
+            String syear = tblStudentGrades.getValueAt(row, 0).toString();
+            String semester = tblStudentGrades.getValueAt(row, 1).toString();
+            String studentNo = tblStudentGrades.getValueAt(row, 2).toString();
+            String subjectCode = tblStudentGrades.getValueAt(row, 3).toString();
+            String description = tblStudentGrades.getValueAt(row, 4).toString();
+            String blockNo = tblStudentGrades.getValueAt(row, 5).toString();
+            String grade = tblStudentGrades.getValueAt(row, 6).toString();
+            String remark = tblStudentGrades.getValueAt(row, 7).toString();
+
+            // Create an array to hold the values
+            Object[] rowData = {syear, semester, studentNo, subjectCode, description, blockNo, grade, remark};
+
+            // Pass the values to the EditStudentGrade class
+            EditStudentGrade editGrade = new EditStudentGrade(rowData);
+            editGrade.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a row to edit.");
+        }
     }//GEN-LAST:event_tblStudentGradesMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
