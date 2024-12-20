@@ -1,21 +1,159 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package finalproject;
+import finalproject.Connection.ConnectPLMDB;
+import java.sql.*;
+import net.proteanit.sql.DbUtils;
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.Font;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import finalproject.Table.TableActionCellRender;
+import javax.swing.text.AbstractDocument;
+import finalproject.FieldValidation.CharacterCountFilter;
+import finalproject.FieldValidation.IntDigitFilter;
+import finalproject.FieldValidation.IntValueFilter;
+import finalproject.FieldValidation.MilitaryTimeFilter;
+import javax.swing.table.TableColumnModel;
 
 /**
  *
  * @author didi
  */
 public class AddSubjectSchedule extends javax.swing.JFrame {
-
-    /**
-     * Creates new form AddSubjectSchedule
-     */
+    Connection conn = null; 
+    PreparedStatement ps = null;
+    ResultSet rs = null; 
+    boolean isConnectionOpen = false; // Flag to track connection state
     public AddSubjectSchedule() {
         initComponents();
+        refresh();
+        toggleFilter(true);
     }
+    private void toggleFilter(boolean status){
+        applyDocumentFilter(txtBlock, 15, status);
+        applyDocumentValueFilter(txtTimeStart1, 24,status);
+        applyDocumentValueFilter(txtTimeStart2, 60,status);
+        applyDocumentValueFilter(txtTimeEnd1, 24,status);
+        applyDocumentValueFilter(txtTimeEnd2, 60,status);
+        applyDocumentFilter(txtRoom, 10, status);
+   }
+    private void applyDocumentFilter(JTextField textField, int characterCount, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new CharacterCountFilter(characterCount));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+    private void applyDocumentValueFilter(JTextField textField, int value, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new IntValueFilter(value));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+    
+    public void refresh() {
+        try {
+            isConnectionOpen = true; // Set flag to true when starting the refresh process
+            conn = ConnectPLMDB.Connect();
+
+            // Populate cmbSchoolYear with school years
+            ps = conn.prepareStatement("SELECT syear FROM schoolyear ORDER BY syear DESC");
+            rs = ps.executeQuery();
+            cmbSchoolYear.removeAllItems();
+            System.out.println("Populating cmbSchoolYear:");
+            while (rs.next()) {
+                String syear = rs.getString("syear");
+                System.out.println(" - " + syear);
+                cmbSchoolYear.addItem(syear);
+            }
+            rs.close();
+            ps.close();
+
+            // Populate cmbSemester with semesters
+            ps = conn.prepareStatement("SELECT semester FROM semester ORDER BY semester ASC");
+            rs = ps.executeQuery();
+            cmbSemester.removeAllItems();
+            System.out.println("Populating cmbSemester:");
+            while (rs.next()) {
+                String semester = rs.getString("semester");
+                System.out.println(" - " + semester);
+                cmbSemester.addItem(semester);
+            }
+            rs.close();
+            ps.close();
+
+            // Populate cmbCollege with college codes and descriptions
+            ps = conn.prepareStatement("SELECT college_code, description FROM college");
+            rs = ps.executeQuery();
+            cmbCollege.removeAllItems();
+            System.out.println("Populating cmbCollege:");
+            while (rs.next()) {
+                String collegeCode = rs.getString("college_code");
+                String description = rs.getString("description");
+                String item = collegeCode + " - " + description;
+                System.out.println(" - " + item);
+                cmbCollege.addItem(item);
+            }
+            rs.close();
+            ps.close();
+
+            // Populate cmbSubjectCode with subject codes and descriptions
+            ps = conn.prepareStatement("SELECT subject_code, description FROM subject ORDER BY subject_code ASC");
+            rs = ps.executeQuery();
+            cmbSubjectCode.removeAllItems();
+            System.out.println("Populating cmbSubjectCode:");
+            while (rs.next()) {
+                String subjectCode = rs.getString("subject_code");
+                String description = rs.getString("description");
+                String item = subjectCode + " - " + description;
+                System.out.println(" - " + item);
+                cmbSubjectCode.addItem(item);
+            }
+            rs.close();
+            ps.close();
+
+            // Populate cmbEmployeeId with employee IDs
+            ps = conn.prepareStatement("SELECT employee_id FROM employee");
+            rs = ps.executeQuery();
+            cmbEmployeeId.removeAllItems();
+            System.out.println("Populating cmbEmployeeId:");
+            while (rs.next()) {
+                String employeeId = rs.getString("employee_id");
+                System.out.println(" - " + employeeId);
+                cmbEmployeeId.addItem(employeeId);
+            }
+            rs.close();
+            ps.close();
+
+            conn.close();
+            isConnectionOpen = false; // Set flag to false when the refresh process is complete
+        } catch (Exception e) {
+            e.printStackTrace();
+            isConnectionOpen = false; // Ensure the flag is reset in case of an exception
+        }
+    }
+    private void updateSubjectDescription(String subjectCode) {
+        if (isConnectionOpen) {
+            return; // Do not proceed if a connection is currently open
+        }
+
+        try {
+            conn = ConnectPLMDB.Connect();
+            ps = conn.prepareStatement("SELECT description FROM subject WHERE subject_code = ?");
+            ps.setString(1, subjectCode);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                txtSubjectDescription.setText(rs.getString("description"));
+            }
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,40 +168,44 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         dashboard1 = new finalproject.Menu.Dashboard();
         btnSave = new finalproject.Components.Button();
         btnCancel = new finalproject.Components.Button();
-        jComboBox12 = new javax.swing.JComboBox<>();
+        cmbEmployeeId = new javax.swing.JComboBox<>();
         jLabel19 = new javax.swing.JLabel();
-        jComboBox7 = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
-        jComboBox9 = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox13 = new javax.swing.JComboBox<>();
         jLabel18 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jComboBox11 = new javax.swing.JComboBox<>();
-        jComboBox10 = new javax.swing.JComboBox<>();
+        cmbSequenceNo = new javax.swing.JComboBox<>();
+        cmbType = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox8 = new javax.swing.JComboBox<>();
+        cmbDay = new javax.swing.JComboBox<>();
         jLabel17 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        jComboBox5 = new javax.swing.JComboBox<>();
-        jTextField1 = new javax.swing.JTextField();
+        cmbSubjectCode = new javax.swing.JComboBox<>();
+        txtSubjectDescription = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        cmbSchoolYear = new javax.swing.JComboBox<>();
+        cmbCollege = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox3 = new javax.swing.JComboBox<>();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        cmbSemester = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         header1 = new finalproject.Menu.Header();
+        txtBlock = new javax.swing.JTextField();
+        txtTimeStart1 = new javax.swing.JTextField();
+        txtRoom = new javax.swing.JTextField();
+        txtTimeStart2 = new javax.swing.JTextField();
+        txtTimeEnd2 = new javax.swing.JTextField();
+        txtTimeEnd1 = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -75,7 +217,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         btnSave.setBackground(new java.awt.Color(91, 142, 225));
         btnSave.setBorder(null);
         btnSave.setForeground(new java.awt.Color(255, 255, 255));
-        btnSave.setText("Save Changes");
+        btnSave.setText("Create Schedule");
         btnSave.setBorderColor(new java.awt.Color(91, 142, 225));
         btnSave.setBorderPainted(false);
         btnSave.setColor(new java.awt.Color(91, 142, 225));
@@ -84,6 +226,11 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         btnSave.setFocusPainted(false);
         btnSave.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
         btnSave.setRadius(20);
+        btnSave.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSaveMouseClicked(evt);
+            }
+        });
 
         btnCancel.setBackground(new java.awt.Color(91, 142, 225));
         btnCancel.setBorder(null);
@@ -108,38 +255,20 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             }
         });
 
-        jComboBox12.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jComboBox12.addActionListener(new java.awt.event.ActionListener() {
+        cmbEmployeeId.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbEmployeeId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox12ActionPerformed(evt);
+                cmbEmployeeIdActionPerformed(evt);
             }
         });
 
         jLabel19.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel19.setText("Employee ID");
 
-        jComboBox7.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jComboBox7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox7ActionPerformed(evt);
-            }
-        });
-
         jLabel13.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel13.setText("Room");
 
-        jComboBox9.setMinimumSize(new java.awt.Dimension(72, 23));
-        jComboBox9.setPreferredSize(new java.awt.Dimension(72, 23));
-        jComboBox9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox9ActionPerformed(evt);
-            }
-        });
-
         jLabel6.setText("to");
-
-        jComboBox13.setMinimumSize(new java.awt.Dimension(72, 23));
-        jComboBox13.setPreferredSize(new java.awt.Dimension(72, 23));
 
         jLabel18.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel18.setText("Time");
@@ -147,19 +276,22 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         jLabel16.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel16.setText("Sequence No.");
 
-        jComboBox11.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jComboBox11.addActionListener(new java.awt.event.ActionListener() {
+        cmbSequenceNo.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbSequenceNo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2"}));
+        cmbSequenceNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox11ActionPerformed(evt);
+                cmbSequenceNoActionPerformed(evt);
             }
         });
 
-        jComboBox10.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbType.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F2F", "OL"}));
 
         jLabel15.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel15.setText("Type");
 
-        jComboBox8.setMinimumSize(new java.awt.Dimension(72, 23));
+        cmbDay.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "M", "T", "W", "Th", "F", "S", "Su"}));
+        cmbDay.setMinimumSize(new java.awt.Dimension(72, 23));
 
         jLabel17.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel17.setText("Day");
@@ -168,7 +300,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
 
         jLabel12.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(43, 58, 103));
-        jLabel12.setText("Subject Details");
+        jLabel12.setText("Class Schedule");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -184,21 +316,32 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        jComboBox5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jComboBox5.addActionListener(new java.awt.event.ActionListener() {
+        cmbSubjectCode.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbSubjectCode.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbSubjectCodeItemStateChanged(evt);
+            }
+        });
+        cmbSubjectCode.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cmbSubjectCodeMouseClicked(evt);
+            }
+        });
+        cmbSubjectCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox5ActionPerformed(evt);
+                cmbSubjectCodeActionPerformed(evt);
             }
         });
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtSubjectDescription.setEditable(false);
+        txtSubjectDescription.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtSubjectDescriptionActionPerformed(evt);
             }
         });
 
         jLabel11.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jLabel11.setText("Subject Title");
+        jLabel11.setText("Subject Description");
 
         jLabel10.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel10.setText("Subject Code");
@@ -223,9 +366,9 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        jComboBox1.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbSchoolYear.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
 
-        jComboBox2.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbCollege.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
 
         jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel5.setText("College");
@@ -253,9 +396,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        jComboBox3.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-
-        jComboBox4.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        cmbSemester.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel8.setText("Semester");
@@ -266,6 +407,10 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(43, 58, 103));
         jLabel2.setText("Add Subject Schedule");
+
+        jLabel14.setText(":");
+
+        jLabel20.setText(":");
 
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
@@ -280,30 +425,43 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmbType, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(roundPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(82, 82, 82))
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
-                                    .addComponent(jComboBox13, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(12, 12, 12)
-                                    .addComponent(jComboBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(7, 7, 7)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(82, 82, 82))
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmbSequenceNo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtTimeStart1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(1, 1, 1)
+                                .addComponent(jLabel14)
+                                .addGap(2, 2, 2)
+                                .addComponent(txtTimeStart2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(1, 1, 1)
+                                .addComponent(jLabel20)
+                                .addGap(2, 2, 2)
+                                .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(119, 119, 119)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox7, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox12, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cmbEmployeeId, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtRoom)
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(139, 139, 139))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -311,29 +469,29 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cmbSubjectCode, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(47, 47, 47)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(txtSubjectDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(cmbCollege, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                                    .addComponent(txtBlock))
+                                .addGap(33, 33, 33)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(12, Short.MAX_VALUE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
@@ -348,34 +506,31 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel1Layout.createSequentialGroup()
                 .addComponent(header1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGap(12, 12, 12)
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                                .addGap(29, 29, 29)
-                                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jLabel5))
-                                        .addGroup(roundPanel1Layout.createSequentialGroup()
-                                            .addComponent(jLabel4)
-                                            .addGap(12, 12, 12)
-                                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(12, 12, 12)
-                                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jLabel7)
+                                        .addGap(12, 12, 12)
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(cmbCollege, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                                            .addComponent(txtBlock))))
+                                .addGroup(roundPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel4)
+                                    .addGap(12, 12, 12)
+                                    .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -384,43 +539,56 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                             .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtSubjectDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cmbSubjectCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel18)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jComboBox13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel16)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel13)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addComponent(jLabel14))
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addGap(13, 13, 13)
+                                        .addComponent(jLabel6))))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel13)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel17)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtTimeStart1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtTimeStart2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(roundPanel1Layout.createSequentialGroup()
+                                        .addGap(28, 28, 28)
+                                        .addComponent(jLabel20)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel15)
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(jLabel15)
+                                            .addComponent(jLabel16))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(cmbType, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cmbSequenceNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel19)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jComboBox12, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(cmbEmployeeId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(18, 18, 18)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -444,29 +612,21 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtSubjectDescriptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSubjectDescriptionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtSubjectDescriptionActionPerformed
 
-    private void jComboBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox5ActionPerformed
+    private void cmbSubjectCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSubjectCodeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox5ActionPerformed
+    }//GEN-LAST:event_cmbSubjectCodeActionPerformed
 
-    private void jComboBox7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox7ActionPerformed
+    private void cmbSequenceNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSequenceNoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox7ActionPerformed
+    }//GEN-LAST:event_cmbSequenceNoActionPerformed
 
-    private void jComboBox9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox9ActionPerformed
+    private void cmbEmployeeIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEmployeeIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox9ActionPerformed
-
-    private void jComboBox11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox11ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox11ActionPerformed
-
-    private void jComboBox12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox12ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox12ActionPerformed
+    }//GEN-LAST:event_cmbEmployeeIdActionPerformed
 
     private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMouseClicked
         SubjectSchedule subSched = new SubjectSchedule();
@@ -481,6 +641,66 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void cmbSubjectCodeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbSubjectCodeItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+                    String selectedItem = (String) cmbSubjectCode.getSelectedItem();
+                    if (selectedItem != null) {
+                        String subjectCode = selectedItem.split(" - ")[0];
+                        updateSubjectDescription(subjectCode);
+                    }
+                }
+    }//GEN-LAST:event_cmbSubjectCodeItemStateChanged
+
+    private void cmbSubjectCodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbSubjectCodeMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbSubjectCodeMouseClicked
+
+    private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
+        // TODO add your handling code here:
+        String syear = (String) cmbSchoolYear.getSelectedItem();
+        String semester = (String) cmbSemester.getSelectedItem();
+        String collegeCode = ((String) cmbCollege.getSelectedItem()).split(" - ")[0];
+        String blockNo = txtBlock.getText();
+        String subjectCode = ((String) cmbSubjectCode.getSelectedItem()).split(" - ")[0];
+        String day = (String) cmbDay.getSelectedItem();
+        String startTime = txtTimeStart1.getText()+":"+txtTimeStart2.getText();
+        String endTime = txtTimeEnd1.getText()+":"+txtTimeEnd2.getText();
+        String time = startTime + " - " + endTime;
+        String room = txtRoom.getText();
+        String type = (String) cmbType.getSelectedItem();
+        String sequenceNo = (String) cmbSequenceNo.getSelectedItem();
+        String employeeId = (String) cmbEmployeeId.getSelectedItem();
+
+        if (syear.isEmpty() || semester.isEmpty() || collegeCode.isEmpty() || blockNo.isEmpty() || subjectCode.isEmpty() || day.isEmpty() || startTime.isEmpty() || endTime.isEmpty() || room.isEmpty() || type.isEmpty() || sequenceNo.isEmpty() || employeeId.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
+        }
+
+        try {
+            conn = ConnectPLMDB.Connect();
+            ps = conn.prepareStatement("INSERT INTO SUBJECT_SCHEDULE (syear, semester, college_code, block_no, subject_code, day, time, room, type, sequence_no, employee_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ps.setString(1, syear);
+            ps.setString(2, semester);
+            ps.setString(3, collegeCode);
+            ps.setString(4, blockNo);
+            ps.setString(5, subjectCode);
+            ps.setString(6, day);
+            ps.setString(7, time);
+            ps.setString(8, room);
+            ps.setString(9, type);
+            ps.setString(10, sequenceNo);
+            ps.setString(11, employeeId);
+            ps.executeUpdate();
+            conn.close();
+            JOptionPane.showMessageDialog(null, "Record added successfully!");
+            refresh();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error adding record: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnSaveMouseClicked
 
     /**
      * @param args the command line arguments
@@ -520,30 +740,28 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private finalproject.Components.Button btnCancel;
     private finalproject.Components.Button btnSave;
+    private javax.swing.JComboBox<String> cmbCollege;
+    private javax.swing.JComboBox<String> cmbDay;
+    private javax.swing.JComboBox<String> cmbEmployeeId;
+    private javax.swing.JComboBox<String> cmbSchoolYear;
+    private javax.swing.JComboBox<String> cmbSemester;
+    private javax.swing.JComboBox<String> cmbSequenceNo;
+    private javax.swing.JComboBox<String> cmbSubjectCode;
+    private javax.swing.JComboBox<String> cmbType;
     private finalproject.Menu.Dashboard dashboard1;
     private finalproject.Menu.Header header1;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox10;
-    private javax.swing.JComboBox<String> jComboBox11;
-    private javax.swing.JComboBox<String> jComboBox12;
-    private javax.swing.JComboBox<String> jComboBox13;
-    private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JComboBox<String> jComboBox3;
-    private javax.swing.JComboBox<String> jComboBox4;
-    private javax.swing.JComboBox<String> jComboBox5;
-    private javax.swing.JComboBox<String> jComboBox7;
-    private javax.swing.JComboBox<String> jComboBox8;
-    private javax.swing.JComboBox<String> jComboBox9;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -554,7 +772,13 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JTextField jTextField1;
     private finalproject.Components.RoundPanel roundPanel1;
+    private javax.swing.JTextField txtBlock;
+    private javax.swing.JTextField txtRoom;
+    private javax.swing.JTextField txtSubjectDescription;
+    private javax.swing.JTextField txtTimeEnd1;
+    private javax.swing.JTextField txtTimeEnd2;
+    private javax.swing.JTextField txtTimeStart1;
+    private javax.swing.JTextField txtTimeStart2;
     // End of variables declaration//GEN-END:variables
 }
