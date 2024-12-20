@@ -1,16 +1,23 @@
 package finalproject.FieldValidation;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-public class SingleCharacterFilter extends DocumentFilter {
+public class IntValueFilter extends DocumentFilter {
+    private int intValue;
+
+    public IntValueFilter(int intValue) {
+        this.intValue = intValue;
+    }
+
     @Override
     public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
         if (string == null) {
             return;
         }
         String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
-        if (newText.length() <= 1) {
+        if (newText.matches("\\d*") && isValid(newText)) {
             super.insertString(fb, offset, string, attr);
         }
     }
@@ -21,13 +28,17 @@ public class SingleCharacterFilter extends DocumentFilter {
             return;
         }
         String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-        if (newText.length() <= 1) {
+        if (newText.matches("\\d*") && isValid(newText)) {
             super.replace(fb, offset, length, text, attrs);
         }
     }
 
-    @Override
-    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-        super.remove(fb, offset, length);
+    private boolean isValid(String text) {
+        try {
+            int value = Integer.parseInt(text);
+            return value < intValue;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

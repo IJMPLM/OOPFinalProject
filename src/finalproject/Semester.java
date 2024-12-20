@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import finalproject.Table.TableActionCellRender;
 import javax.swing.text.AbstractDocument;
-import finalproject.FieldValidation.SingleCharacterFilter;
+import finalproject.FieldValidation.CharacterCountFilter;
 
 public class Semester extends javax.swing.JFrame {
     Connection conn = null; 
@@ -33,7 +33,7 @@ public class Semester extends javax.swing.JFrame {
     
    private void applyDocumentFilter(JTextField textField, boolean apply) {
         if (apply) {
-            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new SingleCharacterFilter());
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new CharacterCountFilter(1));
         } else {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
         }
@@ -233,6 +233,10 @@ public class Semester extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddMouseClicked
+        if (txtSemester.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
+        }
         String query = "INSERT INTO semester (semester) VALUES (?)"; 
         try (Connection conn = ConnectPLMDB.Connect(); 
              PreparedStatement pstmt = conn.prepareStatement(query)) { 
@@ -264,10 +268,10 @@ public class Semester extends javax.swing.JFrame {
 
     private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnDeleteMouseClicked
-
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+        if (txtSemester.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter the Semester to delete.");
+            return;
+        }
         String query = "DELETE FROM semester "
                      + "WHERE semester = (?)"; 
         try (Connection conn = ConnectPLMDB.Connect(); 
@@ -280,6 +284,11 @@ public class Semester extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Delete Existing Related Records First!"); 
         }
         refresh();
+    }//GEN-LAST:event_btnDeleteMouseClicked
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     public static void main(String args[]) {

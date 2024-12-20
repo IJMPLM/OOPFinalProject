@@ -3,14 +3,18 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-public class FourDigitFilter extends DocumentFilter {
+public class IntDigitFilter extends DocumentFilter {
+    private int intDigitCount;
+    public IntDigitFilter(int intDigitCount){
+        this.intDigitCount = intDigitCount;
+    }
     @Override
     public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
         if (string == null) {
             return;
         }
         String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + string;
-        if (newText.matches("\\d{0,4}")) {
+        if (newText.matches("\\d{0," + intDigitCount + "}")) {
             super.insertString(fb, offset, string, attr);
         }
     }
@@ -21,7 +25,7 @@ public class FourDigitFilter extends DocumentFilter {
             return;
         }
         String newText = fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-        if (newText.matches("\\d{0,4}")) {
+        if (newText.matches("\\d{0," + intDigitCount + "}")) {
             super.replace(fb, offset, length, text, attrs);
         }
     }

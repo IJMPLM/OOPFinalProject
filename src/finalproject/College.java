@@ -9,7 +9,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import finalproject.Table.TableActionCellRender;
 import javax.swing.text.AbstractDocument;
-import finalproject.FieldValidation.FourDigitFilter;
+import finalproject.FieldValidation.CharacterCountFilter;
+import finalproject.FieldValidation.IntValueFilter;
+import finalproject.FieldValidation.IntDateFilter;
 import javax.swing.table.TableColumnModel;
 
 public class College extends javax.swing.JFrame {
@@ -28,13 +30,38 @@ public class College extends javax.swing.JFrame {
         tblCollege.getTableHeader().setOpaque(false);
         tblCollege.getTableHeader().setBackground(new Color(212, 228, 255));
         tblCollege.getTableHeader().setForeground(new Color(0, 0, 0));
-        tblCollege.setRowHeight(40);
-//        applyDocumentFilter(txtCollegeCode, true); 
+        tblCollege.setRowHeight(40); 
+        filterToggle(true);
     }
+   private void filterToggle(boolean status){
+        applyDocumentFilter(txtCollegeCode, 10, status); 
+        applyDocumentFilter(txtDescription, 200, status); 
+        applyDocumentFilter(txtDOYear, 4, status); 
+        applyDocumentMonthFilter(txtDOMonth, status);
+        applyDocumentDayFilter(txtDODay, txtDOMonth.getText(), status);
+        applyDocumentFilter(txtDCYear, 4, status); 
+        applyDocumentMonthFilter(txtDCMonth, status);
+        applyDocumentDayFilter(txtDCDay, txtDCMonth.getText(), status);
+        applyDocumentFilter(txtStatus, 1, status); 
+   }
     
-   private void applyDocumentFilter(JTextField textField, boolean apply) {
+   private void applyDocumentFilter(JTextField textField, int characterCount, boolean apply) {
         if (apply) {
-            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new FourDigitFilter());
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new CharacterCountFilter(characterCount));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+   private void applyDocumentMonthFilter(JTextField textField, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new IntDateFilter(null, true));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+   private void applyDocumentDayFilter(JTextField textField, String month, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new IntDateFilter(month, false));
         } else {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
         }
@@ -84,12 +111,20 @@ public class College extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtDescription = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        txtDateOpened = new javax.swing.JTextField();
+        txtDOYear = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        txtDateClosed = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         txtStatus = new javax.swing.JTextField();
         btnUpdate = new finalproject.Components.Button();
+        txtDOMonth = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtDODay = new javax.swing.JTextField();
+        txtDCYear = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        txtDCMonth = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        txtDCDay = new javax.swing.JTextField();
 
         javax.swing.GroupLayout header1Layout = new javax.swing.GroupLayout(header1);
         header1.setLayout(header1Layout);
@@ -197,6 +232,12 @@ public class College extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel8.setText("Date Opened (YYYY-MM-DD)");
 
+        txtDOYear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDOYearActionPerformed(evt);
+            }
+        });
+
         jLabel9.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel9.setText("Date Closed (YYYY-MM-DD)");
 
@@ -226,6 +267,14 @@ public class College extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("-");
+
+        jLabel4.setText("-");
+
+        jLabel12.setText("-");
+
+        jLabel13.setText("-");
+
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
@@ -240,27 +289,45 @@ public class College extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addGap(187, 187, 187))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtStatus, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                                     .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txtCollegeCode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtDateClosed, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtDescription, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtDescription, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtStatus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGap(1, 1, 1)))
-                            .addComponent(txtDateOpened, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addComponent(txtDOYear, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDOMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDODay, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addComponent(txtDCYear, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3)
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDCMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDCDay, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(30, Short.MAX_VALUE))))
         );
         roundPanel1Layout.setVerticalGroup(
             roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -291,11 +358,21 @@ public class College extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDateOpened, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtDOYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtDOMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(txtDODay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(27, 27, 27)
                                 .addComponent(jLabel9)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDateClosed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtDCYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtDCMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel13)
+                                    .addComponent(txtDCDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -325,17 +402,49 @@ public class College extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAddMouseClicked
-        String query = "INSERT INTO schoolyear (syear) VALUES (?)"; 
-        try (Connection conn = ConnectPLMDB.Connect(); 
-             PreparedStatement pstmt = conn.prepareStatement(query)) { 
-                pstmt.setString(1, txtCollegeCode.getText()+"-"); 
-                pstmt.executeUpdate(); 
-                JOptionPane.showMessageDialog(null, "Record added successfully!");         
-                conn.close(); 
-            } catch (SQLException ex) { 
-                ex.printStackTrace(); JOptionPane.showMessageDialog(null, "Error adding record: " + ex.getMessage()); 
+        String collegeCode = txtCollegeCode.getText();
+        String description = txtDescription.getText();
+        String dateOpenedStr = txtDOYear.getText() + "-" + txtDOMonth.getText() + "-" + txtDODay.getText();
+        String dateClosedStr = txtDCYear.getText() + "-" + txtDCMonth.getText() + "-" + txtDCDay.getText();
+        String status = txtStatus.getText();
+
+        if (collegeCode.isEmpty() || description.isEmpty() || dateOpenedStr.isEmpty() || dateClosedStr.isEmpty() || status.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
         }
-        refresh();
+
+        try {
+            // Parse the dates
+            java.sql.Date dateOpened = java.sql.Date.valueOf(dateOpenedStr);
+            java.sql.Date dateClosed = java.sql.Date.valueOf(dateClosedStr);
+
+            conn = ConnectPLMDB.Connect();
+            ps = conn.prepareStatement("SELECT COUNT(*) FROM college WHERE college_code = ?");
+            ps.setString(1, collegeCode);
+            rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                JOptionPane.showMessageDialog(null, "College code already exists.");
+                conn.close();
+                return;
+            }
+
+            ps = conn.prepareStatement("INSERT INTO college (college_code, description, date_opened, date_closed, status) VALUES (?, ?, ?, ?, ?)");
+            ps.setString(1, collegeCode);
+            ps.setString(2, description);
+            ps.setDate(3, dateOpened);
+            ps.setDate(4, dateClosed);
+            ps.setString(5, status);
+            ps.executeUpdate();
+            conn.close();
+            JOptionPane.showMessageDialog(null, "Record added successfully!");
+            refresh();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error adding record: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Invalid date format. Please use YYYY-MM-DD.");
+        }
     }//GEN-LAST:event_btnAddMouseClicked
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -344,11 +453,19 @@ public class College extends javax.swing.JFrame {
 
     private void tblCollegeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCollegeMouseClicked
         int row = tblCollege.getSelectedRow();
-        txtCollegeCode.setText(tblCollege.getModel().getValueAt(row, 0).toString());
-        txtDescription.setText(tblCollege.getModel().getValueAt(row, 1).toString());
-        txtDateOpened.setText(tblCollege.getModel().getValueAt(row, 2).toString());
-        txtDateClosed.setText(tblCollege.getModel().getValueAt(row, 3).toString());
-        txtStatus.setText(tblCollege.getModel().getValueAt(row, 4).toString());
+        filterToggle(false);
+        if (row >= 0) {
+            txtCollegeCode.setText(tblCollege.getModel().getValueAt(row, 0).toString());
+            txtDescription.setText(tblCollege.getModel().getValueAt(row, 1).toString());
+            txtDOYear.setText(tblCollege.getModel().getValueAt(row, 2).toString().substring(0, 4));
+            txtDOMonth.setText(tblCollege.getModel().getValueAt(row, 2).toString().substring(5, 7));
+            txtDODay.setText(tblCollege.getModel().getValueAt(row, 2).toString().substring(8, 10));
+            txtDCYear.setText(tblCollege.getModel().getValueAt(row, 3).toString().substring(0, 4));
+            txtDCMonth.setText(tblCollege.getModel().getValueAt(row, 3).toString().substring(5, 7));
+            txtDCDay.setText(tblCollege.getModel().getValueAt(row, 3).toString().substring(8, 10));
+            txtStatus.setText(tblCollege.getModel().getValueAt(row, 4).toString());
+        }
+        filterToggle(true);
     }//GEN-LAST:event_tblCollegeMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -358,26 +475,83 @@ public class College extends javax.swing.JFrame {
 
     private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
         // TODO add your handling code here:
+        String collegeCode = txtCollegeCode.getText();
+
+        if (collegeCode.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter the College Code to delete.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            conn = ConnectPLMDB.Connect();
+            ps = conn.prepareStatement("DELETE FROM college WHERE college_code = ?");
+            ps.setString(1, collegeCode);
+            int rowsDeleted = ps.executeUpdate();
+            conn.close();
+
+            if (rowsDeleted > 0) {
+                JOptionPane.showMessageDialog(null, "Record deleted successfully!");
+                refresh();
+            } else {
+                JOptionPane.showMessageDialog(null, "College code not found.");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error deleting record: " + ex.getMessage());
+        }
     }//GEN-LAST:event_btnDeleteMouseClicked
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        String query = "DELETE FROM schoolyear "
-                     + "WHERE syear = (?)"; 
-        try (Connection conn = ConnectPLMDB.Connect(); 
-             PreparedStatement pstmt = conn.prepareStatement(query)) { 
-                pstmt.setString(1, txtCollegeCode.getText()); 
-                pstmt.executeUpdate(); 
-                JOptionPane.showMessageDialog(null, "Record deleted successfully!");          
-                conn.close();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Delete Existing Related Records First!"); 
-        }
-        refresh();
+       
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnUpdateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnUpdateMouseClicked
         // TODO add your handling code here:
+        String collegeCode = txtCollegeCode.getText();
+        String description = txtDescription.getText();
+        String dateOpenedStr = txtDOYear.getText() + "-" + txtDOMonth.getText() + "-" + txtDODay.getText();
+        String dateClosedStr = txtDCYear.getText() + "-" + txtDCMonth.getText() + "-" + txtDCDay.getText();
+        String status = txtStatus.getText();
+
+        if (collegeCode.isEmpty() || description.isEmpty() || dateOpenedStr.isEmpty() || dateClosedStr.isEmpty() || status.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+            return;
+        }
+
+        try {
+            // Parse the dates
+            java.sql.Date dateOpened = java.sql.Date.valueOf(dateOpenedStr);
+            java.sql.Date dateClosed = java.sql.Date.valueOf(dateClosedStr);
+
+            conn = ConnectPLMDB.Connect();
+            ps = conn.prepareStatement("UPDATE college SET description = ?, date_opened = ?, date_closed = ?, status = ? WHERE college_code = ?");
+            ps.setString(1, description);
+            ps.setDate(2, dateOpened);
+            ps.setDate(3, dateClosed);
+            ps.setString(4, status);
+            ps.setString(5, collegeCode);
+            int rowsUpdated = ps.executeUpdate();
+            conn.close();
+
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(null, "Record updated successfully!");
+                refresh();
+            } else {
+                JOptionPane.showMessageDialog(null, "College code not found.");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error updating record: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Invalid date format. Please use YYYY-MM-DD.");
+        }
     }//GEN-LAST:event_btnUpdateMouseClicked
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -387,6 +561,10 @@ public class College extends javax.swing.JFrame {
     private void txtCollegeCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCollegeCodeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCollegeCodeActionPerformed
+
+    private void txtDOYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDOYearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDOYearActionPerformed
 
     public static void main(String args[]) {
 
@@ -405,7 +583,11 @@ public class College extends javax.swing.JFrame {
     private finalproject.Menu.Header header1;
     private finalproject.Menu.Header header2;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -414,8 +596,12 @@ public class College extends javax.swing.JFrame {
     private com.raven.swing.RoundPanel roundPanel1;
     private javax.swing.JTable tblCollege;
     private javax.swing.JTextField txtCollegeCode;
-    private javax.swing.JTextField txtDateClosed;
-    private javax.swing.JTextField txtDateOpened;
+    private javax.swing.JTextField txtDCDay;
+    private javax.swing.JTextField txtDCMonth;
+    private javax.swing.JTextField txtDCYear;
+    private javax.swing.JTextField txtDODay;
+    private javax.swing.JTextField txtDOMonth;
+    private javax.swing.JTextField txtDOYear;
     private javax.swing.JTextField txtDescription;
     private javax.swing.JTextField txtStatus;
     // End of variables declaration//GEN-END:variables
