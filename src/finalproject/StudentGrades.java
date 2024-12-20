@@ -1,4 +1,5 @@
 package finalproject;
+import finalproject.Connection.ConnectPLMDB;
 import java.sql.*;
 import net.proteanit.sql.DbUtils;
 import javax.swing.*;
@@ -69,6 +70,12 @@ public class StudentGrades extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setUndecorated(true);
+        setPreferredSize(new java.awt.Dimension(1220, 675));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -252,8 +259,13 @@ public class StudentGrades extends javax.swing.JFrame {
     }//GEN-LAST:event_cmdPrintActionPerformed
 
     private void tblStudentGradesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblStudentGradesMouseClicked
-        refresh();
+        
     }//GEN-LAST:event_tblStudentGradesMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:                                    
+        refresh();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
 

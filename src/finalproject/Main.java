@@ -1,6 +1,8 @@
 package finalproject;
 
-public class OracleConnectionPLMDB {
+import finalproject.Connection.ConnectPLMDB;
+
+public class Main {
 
     public static void main(String[] args) {
 

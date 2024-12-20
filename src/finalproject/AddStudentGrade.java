@@ -20,7 +20,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
         dashboard1 = new finalproject.Menu.Dashboard();
         jLabel1 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        inStudentNumber = new javax.swing.JTextField();
         btnSave1 = new finalproject.Components.Button();
         jLabel3 = new javax.swing.JLabel();
         jTextField12 = new javax.swing.JTextField();
@@ -47,6 +47,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
+        setPreferredSize(new java.awt.Dimension(1220, 675));
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
         roundPanel1.setPreferredSize(new java.awt.Dimension(1220, 612));
@@ -58,7 +59,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel5.setText("Student Number");
 
-        jTextField9.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        inStudentNumber.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
 
         btnSave1.setBackground(new java.awt.Color(91, 142, 225));
         btnSave1.setBorder(null);
@@ -238,7 +239,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(inStudentNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSave1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -299,7 +300,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(inStudentNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnSave1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -402,6 +403,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
     private finalproject.Components.Button btnSave1;
     private finalproject.Menu.Dashboard dashboard1;
     private finalproject.Menu.Header header2;
+    private javax.swing.JTextField inStudentNumber;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -424,6 +426,5 @@ public class AddStudentGrade extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField15;
     private javax.swing.JTextField jTextField16;
     private javax.swing.JTextField jTextField18;
-    private javax.swing.JTextField jTextField9;
     // End of variables declaration//GEN-END:variables
 }

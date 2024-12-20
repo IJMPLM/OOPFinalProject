@@ -1,4 +1,5 @@
 package finalproject;
+import finalproject.Connection.ConnectPLMDB;
 import java.sql.*;
 import net.proteanit.sql.DbUtils;
 import javax.swing.*;
@@ -65,7 +66,13 @@ public class SubjectSchedule extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setUndecorated(true);
+        setPreferredSize(new java.awt.Dimension(1220, 675));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -177,7 +184,7 @@ public class SubjectSchedule extends javax.swing.JFrame {
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
             roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(header2, javax.swing.GroupLayout.DEFAULT_SIZE, 1220, Short.MAX_VALUE)
+            .addComponent(header2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(roundPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(dashboard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -256,8 +263,13 @@ public class SubjectSchedule extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddRecActionPerformed
 
     private void tblSubjectScheduleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSubjectScheduleMouseClicked
-         refresh();
+         
     }//GEN-LAST:event_tblSubjectScheduleMouseClicked
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        refresh();
+    }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
 

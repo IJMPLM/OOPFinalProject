@@ -67,7 +67,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1120, 1120));
+        setPreferredSize(new java.awt.Dimension(1120, 675));
         setResizable(false);
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));

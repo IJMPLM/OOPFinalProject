@@ -1,4 +1,4 @@
-package finalproject;
+package finalproject.Connection;
 import java.sql.*;
 
 public class ConnectPLMDB {
