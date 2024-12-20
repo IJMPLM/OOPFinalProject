@@ -28,8 +28,12 @@ public class SchoolYear extends javax.swing.JFrame {
         tblSchoolYear.getTableHeader().setBackground(new Color(212, 228, 255));
         tblSchoolYear.getTableHeader().setForeground(new Color(0, 0, 0));
         tblSchoolYear.setRowHeight(40);
-        applyDocumentFilter(txtStart, true); 
-        applyDocumentFilter(txtEnd, true);
+        toggleFilter(true);
+        
+    }
+    private void toggleFilter(boolean status){
+        applyDocumentFilter(txtStart, status); 
+        applyDocumentFilter(txtEnd, status);
     }
     
    private void applyDocumentFilter(JTextField textField, boolean apply) {
@@ -50,6 +54,7 @@ public class SchoolYear extends javax.swing.JFrame {
             }         
             conn.close();
             tblSchoolYear.setModel(model);
+            toggleFilter(true);
         } catch (Exception e) {
             System.out.print(e);
         }
@@ -283,15 +288,13 @@ public class SchoolYear extends javax.swing.JFrame {
         String[] years = schoolYear.split("-");
         if (years.length == 2) { 
             // Temporarily remove the document filter
-            applyDocumentFilter(txtStart, false);
-            applyDocumentFilter(txtEnd, false);
+            toggleFilter(false);
 
             txtStart.setText(years[0]);
             txtEnd.setText(years[1]); 
 
             // Reapply the document filter
-            applyDocumentFilter(txtStart, true);
-            applyDocumentFilter(txtEnd, true);
+            toggleFilter(true);
 
             System.out.println("Start Year: " + years[0] + ", End Year: " + years[1]); // Debug print
         } else {

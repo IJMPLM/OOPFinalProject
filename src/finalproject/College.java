@@ -12,6 +12,7 @@ import javax.swing.text.AbstractDocument;
 import finalproject.FieldValidation.CharacterCountFilter;
 import finalproject.FieldValidation.IntValueFilter;
 import finalproject.FieldValidation.IntDateFilter;
+import finalproject.FieldValidation.IntDigitFilter;
 import javax.swing.table.TableColumnModel;
 
 public class College extends javax.swing.JFrame {
@@ -31,15 +32,15 @@ public class College extends javax.swing.JFrame {
         tblCollege.getTableHeader().setBackground(new Color(212, 228, 255));
         tblCollege.getTableHeader().setForeground(new Color(0, 0, 0));
         tblCollege.setRowHeight(40); 
-        filterToggle(true);
+        toggleFilter(true);
     }
-   private void filterToggle(boolean status){
+   private void toggleFilter(boolean status){
         applyDocumentFilter(txtCollegeCode, 10, status); 
         applyDocumentFilter(txtDescription, 200, status); 
-        applyDocumentFilter(txtDOYear, 4, status); 
+        applyDocumentDigitFilter(txtDOYear, 4, status); 
         applyDocumentMonthFilter(txtDOMonth, status);
         applyDocumentDayFilter(txtDODay, txtDOMonth.getText(), status);
-        applyDocumentFilter(txtDCYear, 4, status); 
+        applyDocumentDigitFilter(txtDCYear, 4, status); 
         applyDocumentMonthFilter(txtDCMonth, status);
         applyDocumentDayFilter(txtDCDay, txtDCMonth.getText(), status);
    }
@@ -47,6 +48,13 @@ public class College extends javax.swing.JFrame {
    private void applyDocumentFilter(JTextField textField, int characterCount, boolean apply) {
         if (apply) {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(new CharacterCountFilter(characterCount));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+   private void applyDocumentDigitFilter(JTextField textField, int digitCount, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new IntDigitFilter(digitCount));
         } else {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
         }
@@ -82,6 +90,7 @@ public class College extends javax.swing.JFrame {
             }         
             conn.close();
             tblCollege.setModel(model);
+            toggleFilter(true);
             TableColumnModel columnModel = tblCollege.getColumnModel();
             columnModel.getColumn(0).setPreferredWidth(60); // College Code
             columnModel.getColumn(1).setPreferredWidth(250); // Description
@@ -453,7 +462,7 @@ public class College extends javax.swing.JFrame {
 
     private void tblCollegeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCollegeMouseClicked
         int row = tblCollege.getSelectedRow();
-        filterToggle(false);
+        toggleFilter(false);
         if (row >= 0) {
             txtCollegeCode.setText(tblCollege.getModel().getValueAt(row, 0).toString());
             txtDescription.setText(tblCollege.getModel().getValueAt(row, 1).toString());
@@ -465,7 +474,7 @@ public class College extends javax.swing.JFrame {
             txtDCDay.setText(tblCollege.getModel().getValueAt(row, 3).toString().substring(8, 10));
             cmbStatus.setSelectedItem(tblCollege.getModel().getValueAt(row, 4).toString());
         }
-        filterToggle(true);
+        toggleFilter(true);
     }//GEN-LAST:event_tblCollegeMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened

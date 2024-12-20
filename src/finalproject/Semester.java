@@ -49,6 +49,7 @@ public class Semester extends javax.swing.JFrame {
             }         
             conn.close();
             tblSemester.setModel(model);
+            applyDocumentFilter(txtSemester, true);
         } catch (Exception e) {
             System.out.print(e);
         }

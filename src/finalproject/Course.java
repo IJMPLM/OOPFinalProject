@@ -12,6 +12,7 @@ import javax.swing.text.AbstractDocument;
 import finalproject.FieldValidation.CharacterCountFilter;
 import finalproject.FieldValidation.IntValueFilter;
 import finalproject.FieldValidation.IntDateFilter;
+import finalproject.FieldValidation.IntDigitFilter;
 import javax.swing.table.TableColumnModel;
 
 public class Course extends javax.swing.JFrame {
@@ -31,23 +32,29 @@ public class Course extends javax.swing.JFrame {
         tblCourses.getTableHeader().setBackground(new Color(212, 228, 255));
         tblCourses.getTableHeader().setForeground(new Color(0, 0, 0));
         tblCourses.setRowHeight(40); 
-        filterToggle(true);
+        toggleFilter(true);
     }
-   private void filterToggle(boolean status){
+   private void toggleFilter(boolean status){
         applyDocumentFilter(txtCourseCode, 10, status); 
         applyDocumentFilter(txtDescription, 200, status); 
-        applyDocumentFilter(txtDOYear, 4, status); 
+        applyDocumentDigitFilter(txtDOYear, 4, status); 
         applyDocumentMonthFilter(txtDOMonth, status);
         applyDocumentDayFilter(txtDODay, txtDOMonth.getText(), status);
-        applyDocumentFilter(txtDCYear, 4, status); 
+        applyDocumentDigitFilter(txtDCYear, 4, status); 
         applyDocumentMonthFilter(txtDCMonth, status);
         applyDocumentDayFilter(txtDCDay, txtDCMonth.getText(), status);
-        applyDocumentFilter(txtStatus, 1, status); 
    }
     
    private void applyDocumentFilter(JTextField textField, int characterCount, boolean apply) {
         if (apply) {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(new CharacterCountFilter(characterCount));
+        } else {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
+        }
+    }
+   private void applyDocumentDigitFilter(JTextField textField, int digitCount, boolean apply) {
+        if (apply) {
+            ((AbstractDocument) textField.getDocument()).setDocumentFilter(new IntDigitFilter(digitCount));
         } else {
             ((AbstractDocument) textField.getDocument()).setDocumentFilter(null);
         }
@@ -82,7 +89,8 @@ public class Course extends javax.swing.JFrame {
 
                 model.addRow(new Object[]{courseCode, description, collegeCode, dateOpened, dateClosed, status});
             }
-            tblCourses.setModel(model);
+            tblCourses.setModel(model); 
+            toggleFilter(true);
             TableColumnModel columnModel = tblCourses.getColumnModel();
             columnModel.getColumn(0).setPreferredWidth(30); // Course Code
             columnModel.getColumn(1).setPreferredWidth(400); // Description
@@ -124,7 +132,6 @@ public class Course extends javax.swing.JFrame {
         txtDOYear = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        txtStatus = new javax.swing.JTextField();
         btnUpdate = new finalproject.Components.Button();
         txtDOMonth = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -137,6 +144,7 @@ public class Course extends javax.swing.JFrame {
         txtDCDay = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         cmbCollege = new javax.swing.JComboBox<>();
+        cmbStatus = new javax.swing.JComboBox<>();
 
         javax.swing.GroupLayout header1Layout = new javax.swing.GroupLayout(header1);
         header1.setLayout(header1Layout);
@@ -293,6 +301,8 @@ public class Course extends javax.swing.JFrame {
 
         cmbCollege.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A", "I"}));
+
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
         roundPanel1Layout.setHorizontalGroup(
@@ -320,8 +330,7 @@ public class Course extends javax.swing.JFrame {
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                                     .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtDescription, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txtStatus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtDescription, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGap(1, 1, 1)))
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addComponent(txtDOYear, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -350,7 +359,8 @@ public class Course extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel6)
-                                    .addComponent(cmbCollege, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(cmbCollege, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap())))
         );
         roundPanel1Layout.setVerticalGroup(
@@ -398,7 +408,7 @@ public class Course extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -433,7 +443,7 @@ public class Course extends javax.swing.JFrame {
         String collegeCode = cmbCollege.getSelectedItem().toString();
         String dateOpenedStr = txtDOYear.getText() + "-" + txtDOMonth.getText() + "-" + txtDODay.getText();
         String dateClosedStr = txtDCYear.getText() + "-" + txtDCMonth.getText() + "-" + txtDCDay.getText();
-        String status = txtStatus.getText();
+        String status = cmbStatus.getSelectedItem().toString();
 
         if (courseCode.isEmpty() || description.isEmpty() || collegeCode.isEmpty() || dateOpenedStr.isEmpty() || dateClosedStr.isEmpty() || status.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill in all fields.");
@@ -481,7 +491,7 @@ public class Course extends javax.swing.JFrame {
 
     private void tblCoursesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCoursesMouseClicked
         int row = tblCourses.getSelectedRow();
-        filterToggle(false);
+        toggleFilter(false);
         if (row >= 0) {
             txtCourseCode.setText(tblCourses.getModel().getValueAt(row, 0).toString());
             txtDescription.setText(tblCourses.getModel().getValueAt(row, 1).toString());
@@ -492,9 +502,9 @@ public class Course extends javax.swing.JFrame {
             txtDCYear.setText(tblCourses.getModel().getValueAt(row, 4).toString().substring(0, 4));
             txtDCMonth.setText(tblCourses.getModel().getValueAt(row, 4).toString().substring(5, 7));
             txtDCDay.setText(tblCourses.getModel().getValueAt(row, 4).toString().substring(8, 10));
-            txtStatus.setText(tblCourses.getModel().getValueAt(row, 5).toString());
+            cmbStatus.setSelectedItem(tblCourses.getModel().getValueAt(row, 5).toString());
         }
-        filterToggle(false);
+        toggleFilter(false);
     }//GEN-LAST:event_tblCoursesMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -556,7 +566,7 @@ public class Course extends javax.swing.JFrame {
         String collegeCode = cmbCollege.getSelectedItem().toString();
         String dateOpenedStr = txtDOYear.getText() + "-" + txtDOMonth.getText() + "-" + txtDODay.getText();
         String dateClosedStr = txtDCYear.getText() + "-" + txtDCMonth.getText() + "-" + txtDCDay.getText();
-        String status = txtStatus.getText();
+        String status = cmbStatus.getSelectedItem().toString();
 
         if (courseCode.isEmpty() || description.isEmpty() || collegeCode.isEmpty() || dateOpenedStr.isEmpty() || dateClosedStr.isEmpty() || status.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill in all fields.");
@@ -595,7 +605,7 @@ public class Course extends javax.swing.JFrame {
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Invalid date format. Please use YYYY-MM-DD.");
-        } 
+        }
     }//GEN-LAST:event_btnUpdateMouseClicked
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -624,6 +634,7 @@ public class Course extends javax.swing.JFrame {
     private finalproject.Components.Button btnDelete;
     private finalproject.Components.Button btnUpdate;
     private javax.swing.JComboBox<String> cmbCollege;
+    private javax.swing.JComboBox<String> cmbStatus;
     private finalproject.Menu.Dashboard dashboard1;
     private finalproject.Menu.Header header1;
     private finalproject.Menu.Header header2;
@@ -649,7 +660,6 @@ public class Course extends javax.swing.JFrame {
     private javax.swing.JTextField txtDOMonth;
     private javax.swing.JTextField txtDOYear;
     private javax.swing.JTextField txtDescription;
-    private javax.swing.JTextField txtStatus;
     // End of variables declaration//GEN-END:variables
 }
     
