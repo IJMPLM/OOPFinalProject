@@ -775,7 +775,7 @@ public class Employee extends javax.swing.JFrame {
             txtDGMonth.setText(dateResigned[1]);
             txtDGDay.setText(dateResigned[2]);
         }
-        toggleFilter(false);
+        toggleFilter(true);
     }//GEN-LAST:event_tblEmployeesMouseClicked
 
     private void txtDSYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDSYearActionPerformed

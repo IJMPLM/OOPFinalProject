@@ -805,7 +805,7 @@ public class Student extends javax.swing.JFrame {
             txtDGMonth.setText(dateGraduated[1]);
             txtDGDay.setText(dateGraduated[2]);
         }
-        toggleFilter(false);
+        toggleFilter(true);
     }//GEN-LAST:event_tblStudentsMouseClicked
 
     private void txtDSYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDSYearActionPerformed
