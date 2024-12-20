@@ -7,7 +7,9 @@ import java.awt.Color;
 import java.awt.Font;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableColumnModel;
 import finalproject.Table.TableActionCellRender;
+import finalproject.EditSubjectSchedule;
 
 public class SubjectSchedule extends javax.swing.JFrame {
     Connection conn = null; 
@@ -18,8 +20,8 @@ public class SubjectSchedule extends javax.swing.JFrame {
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
 
-        tblSubjectSchedule.getColumnModel().getColumn(13).setCellRenderer(new TableActionCellRender());
-        tblSubjectSchedule.getColumnModel().getColumn(13).setPreferredWidth(90);
+        tblSubjectSchedule.getColumnModel().getColumn(12).setCellRenderer(new TableActionCellRender());
+        tblSubjectSchedule.getColumnModel().getColumn(12).setPreferredWidth(90);
         tblSubjectSchedule.getTableHeader().setFont (new Font("Microsoft Jheng Hei UI", Font.PLAIN, 14)); 
         tblSubjectSchedule.getTableHeader().setOpaque (false);
         tblSubjectSchedule.getTableHeader().setBackground (new Color (212,228,255));
@@ -32,9 +34,38 @@ public class SubjectSchedule extends javax.swing.JFrame {
             conn = ConnectPLMDB.Connect();
             ps = conn.prepareStatement("SELECT * FROM plm.vwschedule ORDER BY DESCRIPTION");
             rs = ps.executeQuery();
-            tblSubjectSchedule.setModel(DbUtils.resultSetToTableModel(rs));
+
+            // Create a custom table model
+            DefaultTableModel model = new DefaultTableModel(new Object[]{
+                "School Year", "Sem", "College", "Block", "Subject Code", "Subject Title", "Day", "Time", "Room", "Type", "Seq", "Faculty Id", "Faculty Name"
+            }, 0);
+
+            // Populate the table model with data from the result set
+            while (rs.next()) {
+                String syear = rs.getString("syear");
+                String semester = rs.getString("semester");
+                String collegeCode = rs.getString("college_code");
+                String blockNo = rs.getString("block_no");
+                String subjectCode = rs.getString("subject_code");
+                String subjectTitle = rs.getString("description"); // Assuming 'description' is the subject title
+                String day = rs.getString("day");
+                String time = rs.getString("time");
+                String room = rs.getString("room");
+                String type = rs.getString("type");
+                int sequenceNo = rs.getInt("sequence_no");
+                String employeeId = rs.getString("employee_id");
+                String facultyName = rs.getString("employee_name");
+
+                model.addRow(new Object[]{syear, semester, collegeCode, blockNo, subjectCode, subjectTitle, day, time, room, type, sequenceNo, employeeId, facultyName});
+            }
+
+            tblSubjectSchedule.setModel(model);
+
+            rs.close();
+            ps.close();
+            conn.close();
         } catch (Exception e) {
-            System.out.print(e);
+            e.printStackTrace();
         }
     }
     @SuppressWarnings("unchecked")
@@ -109,37 +140,9 @@ public class SubjectSchedule extends javax.swing.JFrame {
 
         tblSubjectSchedule.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         tblSubjectSchedule.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null, null}
-            },
-            new String [] {
-                "S.Y.", "Sem", "College", "Block", "Sub Code", "Subject Title", "Day", "Time", "Room", "Type", "Seq", "Faculty ID", "Faculty Name", "Action"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+            new Object [][] {},
+            new String [] {"School Year", "Sem", "College", "Block", "Subject Code", "Subject Title", "Day", "Time", "Room", "Type", "Seq", "Faculty Id", "Faculty Name"}
+        ));
         tblSubjectSchedule.setFocusable(false);
         tblSubjectSchedule.setGridColor(new java.awt.Color(204, 204, 204));
         tblSubjectSchedule.setRowHeight(40);
@@ -152,17 +155,6 @@ public class SubjectSchedule extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tblSubjectSchedule);
-        if (tblSubjectSchedule.getColumnModel().getColumnCount() > 0) {
-            tblSubjectSchedule.getColumnModel().getColumn(0).setMinWidth(100);
-            tblSubjectSchedule.getColumnModel().getColumn(0).setPreferredWidth(50);
-            tblSubjectSchedule.getColumnModel().getColumn(1).setPreferredWidth(50);
-            tblSubjectSchedule.getColumnModel().getColumn(2).setPreferredWidth(100);
-            tblSubjectSchedule.getColumnModel().getColumn(4).setPreferredWidth(100);
-            tblSubjectSchedule.getColumnModel().getColumn(5).setPreferredWidth(150);
-            tblSubjectSchedule.getColumnModel().getColumn(6).setPreferredWidth(50);
-            tblSubjectSchedule.getColumnModel().getColumn(9).setPreferredWidth(50);
-            tblSubjectSchedule.getColumnModel().getColumn(10).setPreferredWidth(50);
-        }
 
         btnPrint.setBackground(new java.awt.Color(255, 255, 255));
         btnPrint.setText("Print");
@@ -263,7 +255,30 @@ public class SubjectSchedule extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddRecActionPerformed
 
     private void tblSubjectScheduleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSubjectScheduleMouseClicked
-         
+        int row = tblSubjectSchedule.getSelectedRow();    
+        if (row >= 0) {
+                // Retrieve values from the selected row
+                String syear = tblSubjectSchedule.getValueAt(row, 0).toString();
+                String semester = tblSubjectSchedule.getValueAt(row, 1).toString();
+                String collegeCode = tblSubjectSchedule.getValueAt(row, 2).toString();
+                String blockNo = tblSubjectSchedule.getValueAt(row, 3).toString();
+                String subjectCode = tblSubjectSchedule.getValueAt(row, 4).toString();
+                String subjectTitle = tblSubjectSchedule.getValueAt(row, 5).toString();
+                String day = tblSubjectSchedule.getValueAt(row, 6).toString();
+                String time = tblSubjectSchedule.getValueAt(row, 7).toString();
+                String room = tblSubjectSchedule.getValueAt(row, 8).toString();
+                String type = tblSubjectSchedule.getValueAt(row, 9).toString();
+                String sequenceNo = tblSubjectSchedule.getValueAt(row, 10).toString();
+                String employeeId = tblSubjectSchedule.getValueAt(row, 11).toString();
+                String facultyName = tblSubjectSchedule.getValueAt(row, 12).toString();
+
+                // Create an array to hold the values
+                Object[] rowData = {syear, semester, collegeCode, blockNo, subjectCode, subjectTitle, day, time, room, type, sequenceNo, employeeId, facultyName};
+
+                // Pass the values to the EditSubjectSchedule class
+                EditSubjectSchedule editSchedule = new EditSubjectSchedule(rowData);
+                editSchedule.setVisible(true);
+            }
     }//GEN-LAST:event_tblSubjectScheduleMouseClicked
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened

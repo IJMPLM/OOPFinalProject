@@ -19,15 +19,44 @@ import javax.swing.table.TableColumnModel;
  *
  * @author didi
  */
-public class AddSubjectSchedule extends javax.swing.JFrame {
+public class EditSubjectSchedule extends javax.swing.JFrame {
     Connection conn = null; 
     PreparedStatement ps = null;
     ResultSet rs = null; 
     boolean isConnectionOpen = false; // Flag to track connection state
-    public AddSubjectSchedule() {
+    public EditSubjectSchedule(Object[] rowData) {
         initComponents();
         refresh();
         toggleFilter(true);
+
+        // Initialize fields with the passed data
+        txtSchoolYear.setText(rowData[0].toString());
+        txtSemester.setText(rowData[1].toString());
+        txtCollege.setText(rowData[2].toString());
+        txtBlock.setText(rowData[3].toString());
+        txtSubjectCode.setText(rowData[4].toString());
+        txtSubjectDescription.setText(rowData[5].toString());
+        cmbDay.setSelectedItem(rowData[6].toString());
+
+        // Safely split the time string
+        String[] timeParts = rowData[7].toString().split(" - ");
+        if (timeParts.length == 2) {
+            String[] startTimeParts = timeParts[0].split(":");
+            String[] endTimeParts = timeParts[1].split(":");
+            if (startTimeParts.length == 2) {
+                txtTimeStart1.setText(startTimeParts[0]);
+                txtTimeStart2.setText(startTimeParts[1]);
+            }
+            if (endTimeParts.length == 2) {
+                txtTimeEnd1.setText(endTimeParts[0]);
+                txtTimeEnd2.setText(endTimeParts[1]);
+            }
+        }
+
+        txtRoom.setText(rowData[8].toString());
+        cmbType.setSelectedItem(rowData[9].toString());
+        txtSequenceNo.setText(rowData[10].toString());
+        cmbEmployeeId.setSelectedItem(rowData[11].toString());
     }
     private void toggleFilter(boolean status){
         applyDocumentFilter(txtBlock, 15, status);
@@ -57,71 +86,12 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             isConnectionOpen = true; // Set flag to true when starting the refresh process
             conn = ConnectPLMDB.Connect();
 
-            // Populate cmbSchoolYear with school years
-            ps = conn.prepareStatement("SELECT syear FROM schoolyear ORDER BY syear DESC");
-            rs = ps.executeQuery();
-            cmbSchoolYear.removeAllItems();
-            System.out.println("Populating cmbSchoolYear:");
-            while (rs.next()) {
-                String syear = rs.getString("syear");
-                System.out.println(" - " + syear);
-                cmbSchoolYear.addItem(syear);
-            }
-            rs.close();
-            ps.close();
-
-            // Populate cmbSemester with semesters
-            ps = conn.prepareStatement("SELECT semester FROM semester ORDER BY semester ASC");
-            rs = ps.executeQuery();
-            cmbSemester.removeAllItems();
-            System.out.println("Populating cmbSemester:");
-            while (rs.next()) {
-                String semester = rs.getString("semester");
-                System.out.println(" - " + semester);
-                cmbSemester.addItem(semester);
-            }
-            rs.close();
-            ps.close();
-
-            // Populate cmbCollege with college codes and descriptions
-            ps = conn.prepareStatement("SELECT college_code, description FROM college");
-            rs = ps.executeQuery();
-            cmbCollege.removeAllItems();
-            System.out.println("Populating cmbCollege:");
-            while (rs.next()) {
-                String collegeCode = rs.getString("college_code");
-                String description = rs.getString("description");
-                String item = collegeCode + " - " + description;
-                System.out.println(" - " + item);
-                cmbCollege.addItem(item);
-            }
-            rs.close();
-            ps.close();
-
-            // Populate cmbSubjectCode with subject codes and descriptions
-            ps = conn.prepareStatement("SELECT subject_code, description FROM subject ORDER BY subject_code ASC");
-            rs = ps.executeQuery();
-            cmbSubjectCode.removeAllItems();
-            System.out.println("Populating cmbSubjectCode:");
-            while (rs.next()) {
-                String subjectCode = rs.getString("subject_code");
-                String description = rs.getString("description");
-                String item = subjectCode + " - " + description;
-                System.out.println(" - " + item);
-                cmbSubjectCode.addItem(item);
-            }
-            rs.close();
-            ps.close();
-
             // Populate cmbEmployeeId with employee IDs
             ps = conn.prepareStatement("SELECT employee_id FROM employee");
             rs = ps.executeQuery();
             cmbEmployeeId.removeAllItems();
-            System.out.println("Populating cmbEmployeeId:");
             while (rs.next()) {
-                String employeeId = rs.getString("employee_id");
-                System.out.println(" - " + employeeId);
-                cmbEmployeeId.addItem(employeeId);
+                cmbEmployeeId.addItem(rs.getString("employee_id"));
             }
             rs.close();
             ps.close();
@@ -167,38 +137,32 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         roundPanel1 = new finalproject.Components.RoundPanel();
         dashboard1 = new finalproject.Menu.Dashboard();
         btnSave = new finalproject.Components.Button();
-        btnCancel = new finalproject.Components.Button();
+        btnDelete = new finalproject.Components.Button();
         cmbEmployeeId = new javax.swing.JComboBox<>();
         jLabel19 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        cmbSequenceNo = new javax.swing.JComboBox<>();
         cmbType = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
         cmbDay = new javax.swing.JComboBox<>();
         jLabel17 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
-        cmbSubjectCode = new javax.swing.JComboBox<>();
         txtSubjectDescription = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
-        cmbSchoolYear = new javax.swing.JComboBox<>();
-        cmbCollege = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        cmbSemester = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         header1 = new finalproject.Menu.Header();
-        txtBlock = new javax.swing.JTextField();
         txtTimeStart1 = new javax.swing.JTextField();
         txtRoom = new javax.swing.JTextField();
         txtTimeStart2 = new javax.swing.JTextField();
@@ -206,10 +170,16 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         txtTimeEnd1 = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
+        txtSchoolYear = new javax.swing.JTextField();
+        txtCollege = new javax.swing.JTextField();
+        txtBlock = new javax.swing.JTextField();
+        txtSemester = new javax.swing.JTextField();
+        txtSubjectCode = new javax.swing.JTextField();
+        txtSequenceNo = new javax.swing.JTextField();
+        btnCancel1 = new finalproject.Components.Button();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1600, 675));
         setResizable(false);
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -217,7 +187,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         btnSave.setBackground(new java.awt.Color(91, 142, 225));
         btnSave.setBorder(null);
         btnSave.setForeground(new java.awt.Color(255, 255, 255));
-        btnSave.setText("Create Schedule");
+        btnSave.setText("Save Changes");
         btnSave.setBorderColor(new java.awt.Color(91, 142, 225));
         btnSave.setBorderPainted(false);
         btnSave.setColor(new java.awt.Color(91, 142, 225));
@@ -232,26 +202,26 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             }
         });
 
-        btnCancel.setBackground(new java.awt.Color(91, 142, 225));
-        btnCancel.setBorder(null);
-        btnCancel.setForeground(new java.awt.Color(255, 255, 255));
-        btnCancel.setText("Cancel");
-        btnCancel.setBorderColor(new java.awt.Color(91, 142, 225));
-        btnCancel.setBorderPainted(false);
-        btnCancel.setColor(new java.awt.Color(91, 142, 225));
-        btnCancel.setColorClick(new java.awt.Color(73, 114, 180));
-        btnCancel.setColorOver(new java.awt.Color(82, 128, 203));
-        btnCancel.setFocusPainted(false);
-        btnCancel.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
-        btnCancel.setRadius(20);
-        btnCancel.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnDelete.setBackground(new java.awt.Color(91, 142, 225));
+        btnDelete.setBorder(null);
+        btnDelete.setForeground(new java.awt.Color(255, 255, 255));
+        btnDelete.setText("Delete Schedule");
+        btnDelete.setBorderColor(new java.awt.Color(91, 142, 225));
+        btnDelete.setBorderPainted(false);
+        btnDelete.setColor(new java.awt.Color(91, 142, 225));
+        btnDelete.setColorClick(new java.awt.Color(73, 114, 180));
+        btnDelete.setColorOver(new java.awt.Color(82, 128, 203));
+        btnDelete.setFocusPainted(false);
+        btnDelete.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
+        btnDelete.setRadius(20);
+        btnDelete.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnCancelMouseClicked(evt);
+                btnDeleteMouseClicked(evt);
             }
         });
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
+                btnDeleteActionPerformed(evt);
             }
         });
 
@@ -271,18 +241,10 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         jLabel6.setText("to");
 
         jLabel18.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jLabel18.setText("Time (hh:mm)");
+        jLabel18.setText("Time (hh:mm - hh:mm)");
 
         jLabel16.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel16.setText("Sequence No.");
-
-        cmbSequenceNo.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        cmbSequenceNo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2"}));
-        cmbSequenceNo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbSequenceNoActionPerformed(evt);
-            }
-        });
 
         cmbType.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         cmbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "F2F", "OL"}));
@@ -315,23 +277,6 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
-
-        cmbSubjectCode.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        cmbSubjectCode.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbSubjectCodeItemStateChanged(evt);
-            }
-        });
-        cmbSubjectCode.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cmbSubjectCodeMouseClicked(evt);
-            }
-        });
-        cmbSubjectCode.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbSubjectCodeActionPerformed(evt);
-            }
-        });
 
         txtSubjectDescription.setEditable(false);
         txtSubjectDescription.addActionListener(new java.awt.event.ActionListener() {
@@ -366,10 +311,6 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        cmbSchoolYear.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-
-        cmbCollege.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-
         jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel5.setText("College");
 
@@ -396,8 +337,6 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
         );
 
-        cmbSemester.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-
         jLabel8.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
         jLabel8.setText("Semester");
 
@@ -406,11 +345,76 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(43, 58, 103));
-        jLabel2.setText("Add Subject Schedule");
+        jLabel2.setText("Edit Subject Schedule");
 
         jLabel14.setText(":");
 
         jLabel20.setText(":");
+
+        txtSchoolYear.setEditable(false);
+        txtSchoolYear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSchoolYearActionPerformed(evt);
+            }
+        });
+
+        txtCollege.setEditable(false);
+        txtCollege.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCollegeActionPerformed(evt);
+            }
+        });
+
+        txtBlock.setEditable(false);
+        txtBlock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBlockActionPerformed(evt);
+            }
+        });
+
+        txtSemester.setEditable(false);
+        txtSemester.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSemesterActionPerformed(evt);
+            }
+        });
+
+        txtSubjectCode.setEditable(false);
+        txtSubjectCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSubjectCodeActionPerformed(evt);
+            }
+        });
+
+        txtSequenceNo.setEditable(false);
+        txtSequenceNo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSequenceNoActionPerformed(evt);
+            }
+        });
+
+        btnCancel1.setBackground(new java.awt.Color(91, 142, 225));
+        btnCancel1.setBorder(null);
+        btnCancel1.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancel1.setText("Cancel");
+        btnCancel1.setBorderColor(new java.awt.Color(91, 142, 225));
+        btnCancel1.setBorderPainted(false);
+        btnCancel1.setColor(new java.awt.Color(91, 142, 225));
+        btnCancel1.setColorClick(new java.awt.Color(73, 114, 180));
+        btnCancel1.setColorOver(new java.awt.Color(82, 128, 203));
+        btnCancel1.setFocusPainted(false);
+        btnCancel1.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 12)); // NOI18N
+        btnCancel1.setRadius(20);
+        btnCancel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCancel1MouseClicked(evt);
+            }
+        });
+        btnCancel1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancel1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout roundPanel1Layout = new javax.swing.GroupLayout(roundPanel1);
         roundPanel1.setLayout(roundPanel1Layout);
@@ -429,31 +433,32 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addGap(7, 7, 7)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(82, 82, 82))
-                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cmbSequenceNo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundPanel1Layout.createSequentialGroup()
+                                        .addComponent(txtTimeStart1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(1, 1, 1)
+                                        .addComponent(jLabel14)
+                                        .addGap(2, 2, 2)
+                                        .addComponent(txtTimeStart2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(5, 5, 5)
+                                        .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(1, 1, 1)
+                                        .addComponent(jLabel20)
+                                        .addGap(2, 2, 2)
+                                        .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtSequenceNo, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addGap(139, 139, 139))
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtTimeStart1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1, 1, 1)
-                                .addComponent(jLabel14)
-                                .addGap(2, 2, 2)
-                                .addComponent(txtTimeStart2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(5, 5, 5)
-                                .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(1, 1, 1)
-                                .addComponent(jLabel20)
-                                .addGap(2, 2, 2)
-                                .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(119, 119, 119)
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cmbEmployeeId, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtRoom)
@@ -464,39 +469,42 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(139, 139, 139))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(txtSchoolYear))
+                        .addGap(63, 63, 63)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtCollege, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtBlock, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(33, 33, 33)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cmbSubjectCode, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(47, 47, 47)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                                    .addComponent(txtSubjectCode))
+                                .addGap(60, 60, 60)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtSubjectDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundPanel1Layout.createSequentialGroup()
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cmbCollege, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
-                                    .addComponent(txtBlock))
-                                .addGap(33, 33, 33)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(12, Short.MAX_VALUE))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCancel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(49, 49, 49))))
@@ -517,20 +525,21 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cmbSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtBlock, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtSemester, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel7)
                                         .addGap(12, 12, 12)
-                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(cmbCollege, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                                            .addComponent(txtBlock))))
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtCollege, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGroup(roundPanel1Layout.createSequentialGroup()
                                     .addComponent(jLabel4)
-                                    .addGap(12, 12, 12)
-                                    .addComponent(cmbSchoolYear, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGap(42, 42, 42))))
                         .addGap(18, 18, 18)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -540,33 +549,32 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtSubjectDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbSubjectCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtSubjectCode, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel18)
-                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addGap(12, 12, 12)
-                                        .addComponent(jLabel14))
-                                    .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addGap(13, 13, 13)
-                                        .addComponent(jLabel6))))
+                                .addGap(23, 23, 23)
+                                .addComponent(txtRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtTimeEnd2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtTimeEnd1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addComponent(jLabel14))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addComponent(jLabel6))
                             .addGroup(roundPanel1Layout.createSequentialGroup()
                                 .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel13)
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel17)
+                                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(jLabel17)
+                                            .addComponent(jLabel18))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(cmbDay, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -584,15 +592,16 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(cmbType, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cmbSequenceNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addComponent(txtSequenceNo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(roundPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel19)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cmbEmployeeId, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(18, 18, 18)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnCancel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(dashboard1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10))
         );
@@ -616,61 +625,60 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtSubjectDescriptionActionPerformed
 
-    private void cmbSubjectCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSubjectCodeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbSubjectCodeActionPerformed
-
-    private void cmbSequenceNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSequenceNoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbSequenceNoActionPerformed
-
     private void cmbEmployeeIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEmployeeIdActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbEmployeeIdActionPerformed
 
-    private void btnCancelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancelMouseClicked
-        SubjectSchedule subSched = new SubjectSchedule();
-        subSched.setVisible(true);
+    private void btnDeleteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnDeleteMouseClicked
+        // Retrieve values from the fields
+        String syear = txtSchoolYear.getText();
+        String semester = txtSemester.getText();
+        String collegeCode = txtCollege.getText();
+        String blockNo = txtBlock.getText();
+        String subjectCode = txtSubjectCode.getText();
+        String sequenceNo = txtSequenceNo.getText();
 
-        java.awt.Window window = javax.swing.SwingUtilities.getWindowAncestor(this);
-        if (window != null) {
-            window.dispose();
-        }
-    }//GEN-LAST:event_btnCancelMouseClicked
+        // Confirm deletion
+        int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this record?", "Delete Confirmation", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                conn = ConnectPLMDB.Connect();
+                ps = conn.prepareStatement("DELETE FROM SUBJECT_SCHEDULE WHERE syear = ? AND semester = ? AND college_code = ? AND block_no = ? AND subject_code = ? AND sequence_no = ?");
+                ps.setString(1, syear);
+                ps.setString(2, semester);
+                ps.setString(3, collegeCode);
+                ps.setString(4, blockNo);
+                ps.setString(5, subjectCode);
+                ps.setString(6, sequenceNo);
+                ps.executeUpdate();
+                conn.close();
+                JOptionPane.showMessageDialog(null, "Record deleted successfully!");
+                this.dispose(); // Close the edit window
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error deleting record: " + ex.getMessage());
+            }
+        } 
+    }//GEN-LAST:event_btnDeleteMouseClicked
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnCancelActionPerformed
-
-    private void cmbSubjectCodeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbSubjectCodeItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
-                    String selectedItem = (String) cmbSubjectCode.getSelectedItem();
-                    if (selectedItem != null) {
-                        String subjectCode = selectedItem.split(" - ")[0];
-                        updateSubjectDescription(subjectCode);
-                    }
-                }
-    }//GEN-LAST:event_cmbSubjectCodeItemStateChanged
-
-    private void cmbSubjectCodeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbSubjectCodeMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbSubjectCodeMouseClicked
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnSaveMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSaveMouseClicked
         // TODO add your handling code here:
-        String syear = (String) cmbSchoolYear.getSelectedItem();
-        String semester = (String) cmbSemester.getSelectedItem();
-        String collegeCode = ((String) cmbCollege.getSelectedItem()).split(" - ")[0];
+        String syear = (String) txtSchoolYear.getText();
+        String semester = (String) txtSemester.getText();
+        String collegeCode = ((String) txtCollege.getText()).split(" - ")[0];
         String blockNo = txtBlock.getText();
-        String subjectCode = ((String) cmbSubjectCode.getSelectedItem()).split(" - ")[0];
+        String subjectCode = ((String) txtSubjectCode.getText()).split(" - ")[0];
         String day = (String) cmbDay.getSelectedItem();
-        String startTime = txtTimeStart1.getText()+":"+txtTimeStart2.getText();
-        String endTime = txtTimeEnd1.getText()+":"+txtTimeEnd2.getText();
+        String startTime = txtTimeStart1.getText() + ":" + txtTimeStart2.getText();
+        String endTime = txtTimeEnd1.getText() + ":" + txtTimeEnd2.getText();
         String time = startTime + " - " + endTime;
         String room = txtRoom.getText();
         String type = (String) cmbType.getSelectedItem();
-        String sequenceNo = (String) cmbSequenceNo.getSelectedItem();
+        String sequenceNo = (String) txtSequenceNo.getText();
         String employeeId = (String) cmbEmployeeId.getSelectedItem();
 
         if (syear.isEmpty() || semester.isEmpty() || collegeCode.isEmpty() || blockNo.isEmpty() || subjectCode.isEmpty() || day.isEmpty() || startTime.isEmpty() || endTime.isEmpty() || room.isEmpty() || type.isEmpty() || sequenceNo.isEmpty() || employeeId.isEmpty()) {
@@ -680,7 +688,7 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
 
         try {
             conn = ConnectPLMDB.Connect();
-            ps = conn.prepareStatement("INSERT INTO SUBJECT_SCHEDULE (syear, semester, college_code, block_no, subject_code, day, time, room, type, sequence_no, employee_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            ps = conn.prepareStatement("UPDATE SUBJECT_SCHEDULE SET syear = ?, semester = ?, college_code = ?, block_no = ?, subject_code = ?, day = ?, time = ?, room = ?, type = ?, sequence_no = ?, employee_id = ? WHERE syear = ? AND semester = ? AND college_code = ? AND block_no = ? AND subject_code = ? AND sequence_no = ?");
             ps.setString(1, syear);
             ps.setString(2, semester);
             ps.setString(3, collegeCode);
@@ -692,15 +700,55 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
             ps.setString(9, type);
             ps.setString(10, sequenceNo);
             ps.setString(11, employeeId);
+            ps.setString(12, syear); // Assuming these are the primary key or unique identifier fields
+            ps.setString(13, semester);
+            ps.setString(14, collegeCode);
+            ps.setString(15, blockNo);
+            ps.setString(16, subjectCode);
+            ps.setString(17, sequenceNo);
             ps.executeUpdate();
             conn.close();
-            JOptionPane.showMessageDialog(null, "Record added successfully!");
+            JOptionPane.showMessageDialog(null, "Record updated successfully!");
             refresh();
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error adding record: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Error updating record: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnSaveMouseClicked
+
+    private void txtSchoolYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSchoolYearActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSchoolYearActionPerformed
+
+    private void txtCollegeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCollegeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCollegeActionPerformed
+
+    private void txtBlockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBlockActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBlockActionPerformed
+
+    private void txtSemesterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSemesterActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSemesterActionPerformed
+
+    private void txtSubjectCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSubjectCodeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSubjectCodeActionPerformed
+
+    private void txtSequenceNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSequenceNoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSequenceNoActionPerformed
+
+    private void btnCancel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCancel1MouseClicked
+        // TODO add your handling code here:
+        this.dispose(); 
+        new SubjectSchedule().setVisible(true);
+    }//GEN-LAST:event_btnCancel1MouseClicked
+
+    private void btnCancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancel1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -719,34 +767,30 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AddSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AddSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AddSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EditSubjectSchedule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddSubjectSchedule().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private finalproject.Components.Button btnCancel;
+    private finalproject.Components.Button btnCancel1;
+    private finalproject.Components.Button btnDelete;
     private finalproject.Components.Button btnSave;
-    private javax.swing.JComboBox<String> cmbCollege;
     private javax.swing.JComboBox<String> cmbDay;
     private javax.swing.JComboBox<String> cmbEmployeeId;
-    private javax.swing.JComboBox<String> cmbSchoolYear;
-    private javax.swing.JComboBox<String> cmbSemester;
-    private javax.swing.JComboBox<String> cmbSequenceNo;
-    private javax.swing.JComboBox<String> cmbSubjectCode;
     private javax.swing.JComboBox<String> cmbType;
     private finalproject.Menu.Dashboard dashboard1;
     private finalproject.Menu.Header header1;
@@ -774,7 +818,12 @@ public class AddSubjectSchedule extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private finalproject.Components.RoundPanel roundPanel1;
     private javax.swing.JTextField txtBlock;
+    private javax.swing.JTextField txtCollege;
     private javax.swing.JTextField txtRoom;
+    private javax.swing.JTextField txtSchoolYear;
+    private javax.swing.JTextField txtSemester;
+    private javax.swing.JTextField txtSequenceNo;
+    private javax.swing.JTextField txtSubjectCode;
     private javax.swing.JTextField txtSubjectDescription;
     private javax.swing.JTextField txtTimeEnd1;
     private javax.swing.JTextField txtTimeEnd2;
