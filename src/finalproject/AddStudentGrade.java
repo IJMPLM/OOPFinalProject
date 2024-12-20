@@ -47,7 +47,7 @@ public class AddStudentGrade extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1220, 675));
+        setPreferredSize(new java.awt.Dimension(1600, 675));
 
         roundPanel1.setBackground(new java.awt.Color(255, 255, 255));
         roundPanel1.setPreferredSize(new java.awt.Dimension(1220, 612));

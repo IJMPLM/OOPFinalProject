@@ -102,10 +102,10 @@ public class College extends javax.swing.JFrame {
         header2 = new finalproject.Menu.Header();
         dashboard1 = new finalproject.Menu.Dashboard();
         jLabel2 = new javax.swing.JLabel();
-        btnAdd = new finalproject.Components.Button();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblCollege = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
+        btnAdd = new finalproject.Components.Button();
         txtCollegeCode = new javax.swing.JTextField();
         btnDelete = new finalproject.Components.Button();
         jLabel7 = new javax.swing.JLabel();
@@ -140,6 +140,7 @@ public class College extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setUndecorated(true);
+        setPreferredSize(new java.awt.Dimension(1600, 675));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
@@ -152,6 +153,27 @@ public class College extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Microsoft JhengHei UI", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(43, 58, 103));
         jLabel2.setText("College");
+
+        tblCollege.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        tblCollege.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {},
+            new String [] {"College Code", "Description", "Date Opened", "Date Closed", "Status"}
+        ));
+        tblCollege.setFocusable(false);
+        tblCollege.setGridColor(new java.awt.Color(204, 204, 204));
+        tblCollege.setRowHeight(40);
+        tblCollege.setSelectionBackground(new java.awt.Color(224, 234, 255));
+        tblCollege.setShowGrid(true);
+        tblCollege.setShowVerticalLines(false);
+        tblCollege.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCollegeMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblCollege);
+
+        jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
+        jLabel5.setText("College Code");
 
         btnAdd.setBackground(new java.awt.Color(91, 142, 225));
         btnAdd.setBorder(null);
@@ -175,27 +197,6 @@ public class College extends javax.swing.JFrame {
                 btnAddActionPerformed(evt);
             }
         });
-
-        tblCollege.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        tblCollege.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] {"College Code", "Description", "Date Opened", "Date Closed", "Status"}
-        ));
-        tblCollege.setFocusable(false);
-        tblCollege.setGridColor(new java.awt.Color(204, 204, 204));
-        tblCollege.setRowHeight(40);
-        tblCollege.setSelectionBackground(new java.awt.Color(224, 234, 255));
-        tblCollege.setShowGrid(true);
-        tblCollege.setShowVerticalLines(false);
-        tblCollege.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblCollegeMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblCollege);
-
-        jLabel5.setFont(new java.awt.Font("Microsoft JhengHei UI", 0, 12)); // NOI18N
-        jLabel5.setText("College Code");
 
         txtCollegeCode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -289,7 +290,7 @@ public class College extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addGap(187, 187, 187))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 859, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -327,7 +328,7 @@ public class College extends javax.swing.JFrame {
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDCDay, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(30, Short.MAX_VALUE))))
+                        .addContainerGap())))
         );
         roundPanel1Layout.setVerticalGroup(
             roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -340,14 +341,8 @@ public class College extends javax.swing.JFrame {
                         .addGap(10, 10, 10))
                     .addGroup(roundPanel1Layout.createSequentialGroup()
                         .addGap(43, 43, 43)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(roundPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 449, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(roundPanel1Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtCollegeCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -382,8 +377,12 @@ public class College extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 449, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
