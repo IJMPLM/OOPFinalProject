@@ -98,7 +98,6 @@
                                           <Component id="jLabel5" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
                                           <Component id="txtCollegeCode" alignment="0" min="-2" pref="111" max="-2" attributes="0"/>
                                           <Component id="txtDescription" alignment="0" min="-2" pref="181" max="-2" attributes="0"/>
-                                          <Component id="txtStatus" alignment="0" min="-2" pref="75" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                                   </Group>
@@ -125,6 +124,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="txtDCDay" min="-2" pref="34" max="-2" attributes="0"/>
                               </Group>
+                              <Component id="cmbStatus" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -176,8 +176,8 @@
                                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="txtStatus" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="cmbStatus" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                   <Component id="btnAdd" min="-2" pref="32" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="btnUpdate" min="-2" pref="32" max="-2" attributes="0"/>
@@ -375,8 +375,6 @@
             <Property name="text" type="java.lang.String" value="Status"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtStatus">
-        </Component>
         <Component class="finalproject.Components.Button" name="btnUpdate">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -442,6 +440,16 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="txtDCDay">
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cmbStatus">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(new String[] { &quot;A&quot;, &quot;I&quot;})" type="code"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
