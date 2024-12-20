@@ -9,6 +9,7 @@ import finalproject.Semester;
 import finalproject.College;
 import finalproject.Course;
 import finalproject.Student;
+import finalproject.Employee;
 
 public class Dashboard extends javax.swing.JPanel {
 
@@ -517,6 +518,20 @@ public class Dashboard extends javax.swing.JPanel {
 
     private void btnEmployeeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEmployeeMouseClicked
         // TODO add your handling code here:
+        if (dbButtons.selectedButton != btnSubjSched) {
+            if (dbButtons.selectedButton != null) {
+                dbButtons.selectedButton.setSelected(false);
+            }
+            btnEmployee.setSelected(true);
+        }
+
+        Employee ss = new Employee();
+        ss.setVisible(true);
+
+        java.awt.Window window = javax.swing.SwingUtilities.getWindowAncestor(this);
+        if (window != null) {
+            window.dispose();
+        }  
     }//GEN-LAST:event_btnEmployeeMouseClicked
 
     private void btnEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEmployeeActionPerformed
